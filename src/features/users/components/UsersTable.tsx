@@ -1,4 +1,5 @@
 import type { User } from "../types/user.types";
+import UserStatusBadge from "./UserStatusBadge";
 
 interface UsersTableProps {
   users: User[];
@@ -25,7 +26,9 @@ const UsersTable = ({ users }: UsersTableProps) => {
             <td>{user.name}</td>
             <td>{user.email}</td>
             <td>{user.role}</td>
-            <td>{user.active ? "Activo" : "Inactivo"}</td>
+            <td>
+              <UserStatusBadge active={user.active} />
+            </td>
           </tr>
         ))}
       </tbody>

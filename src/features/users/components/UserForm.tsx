@@ -6,6 +6,8 @@ import type { UserRole } from "../types/user.types";
 interface UserFormProps {
   onSubmit: (values: UserSchemaValues) => void | Promise<void>;
   isSubmitting?: boolean;
+  submitLabel?: string;
+  initialValues?: Partial<UserSchemaValues>;
 }
 
 const roleOptions: UserRole[] = [
@@ -15,7 +17,12 @@ const roleOptions: UserRole[] = [
   "TECNICO",
 ];
 
-const UserForm = ({ onSubmit, isSubmitting = false }: UserFormProps) => {
+const UserForm = ({
+  onSubmit,
+  isSubmitting = false,
+  submitLabel = "Guardar",
+  initialValues,
+}: UserFormProps) => {
   const {
     register,
     handleSubmit,
@@ -23,10 +30,10 @@ const UserForm = ({ onSubmit, isSubmitting = false }: UserFormProps) => {
   } = useForm<UserSchemaValues>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      role: "OPERADOR",
+      name: initialValues?.name ?? "",
+      email: initialValues?.email ?? "",
+      password: initialValues?.password ?? "",
+      role: initialValues?.role ?? "OPERADOR",
     },
   });
 
@@ -63,7 +70,7 @@ const UserForm = ({ onSubmit, isSubmitting = false }: UserFormProps) => {
       </div>
 
       <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Guardando..." : "Crear usuario"}
+        {isSubmitting ? "Guardando..." : submitLabel}
       </button>
     </form>
   );
