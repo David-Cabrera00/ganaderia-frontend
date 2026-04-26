@@ -1,0 +1,1 @@
+export { CowsPage } from '../CowsPage';

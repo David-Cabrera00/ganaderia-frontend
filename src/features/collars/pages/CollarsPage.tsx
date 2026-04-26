@@ -1,0 +1,1 @@
+export { CollarsPage } from '../CollarsPage';
