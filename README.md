@@ -1,194 +1,155 @@
-# Ganadería 4.0 — Frontend
+# Ganadería 4.0 Frontend
 
-Plataforma de monitoreo ganadero. Frontend construido con React + TypeScript + Vite.
+Frontend del sistema **Ganadería 4.0**, una plataforma orientada al monitoreo y gestión ganadera mediante collares GPS, geocercas, ubicaciones y alertas operativas.
 
-> Esta versión quedó preparada para trabajar **100% en local** con datos simulados en `localStorage`, con dashboard rediseñado y estructura modular lista para conectar backend real después.
+Este proyecto permite visualizar y administrar la información principal del sistema desde una interfaz web moderna, organizada por módulos y preparada para integrarse con el backend de Ganadería 4.0.
 
 ---
 
-## Stack
+## Descripción
 
-| Tecnología | Uso |
-|---|---|
-| React 18 | UI |
-| TypeScript 5 | Tipado fuerte |
-| Vite 5 | Bundler y dev server |
-| React Router 6 | Navegación + rutas protegidas |
-| Zustand + persist | Estado global y persistencia de sesión |
-| React Hook Form | Formularios |
-| Zod | Validación de esquemas |
-| Axios | HTTP client con interceptores JWT |
-| react-hot-toast | Notificaciones |
-| lucide-react | Iconos |
+El frontend de Ganadería 4.0 permite gestionar de forma visual los procesos principales del sistema, como el registro de vacas, administración de collares, control de geocercas, consulta de ubicaciones y seguimiento de alertas.
+
+Actualmente el proyecto puede ejecutarse en entorno local y está estructurado para facilitar su conexión con una API backend.
+
+---
+
+## Características principales
+
+- Inicio de sesión.
+- Panel principal con resumen del sistema.
+- Gestión de vacas.
+- Gestión de collares GPS.
+- Gestión de geocercas.
+- Consulta de ubicaciones.
+- Gestión de alertas.
+- Interfaz responsive y organizada.
+- Estructura preparada para conexión con backend.
+
+---
+
+## Tecnologías utilizadas
+
+- React
+- TypeScript
+- Vite
+- React Router
+- Axios
+- Zustand
+- Zod
+- React Hook Form
+- CSS / diseño modular
+
+---
+
+## Módulos del sistema
+
+### 1. Autenticación
+
+Permite el acceso al sistema mediante una pantalla de inicio de sesión.
+
+### 2. Dashboard
+
+Muestra un resumen general del estado del sistema, incluyendo información relevante de vacas, collares, geocercas y alertas.
+
+### 3. Vacas
+
+Permite visualizar y administrar la información de los animales registrados.
+
+### 4. Collares
+
+Permite gestionar los collares GPS asociados al monitoreo ganadero.
+
+### 5. Geocercas
+
+Permite administrar zonas geográficas definidas para el control del ganado.
+
+### 6. Ubicaciones
+
+Permite consultar registros de ubicación enviados por los collares.
+
+### 7. Alertas
+
+Permite visualizar eventos importantes, como salidas de geocerca o problemas operativos.
 
 ---
 
 ## Requisitos previos
 
-- Node.js 18+ 
-- Node.js 18+
-- No necesitas backend para esta versión local
+Antes de ejecutar el proyecto necesitas tener instalado:
+
+- Node.js 18 o superior
+- npm
+- Git
 
 ---
 
-## Instalación y arranque
+## Instalación y ejecución
+
+Clonar el repositorio:
 
 ```bash
-# 1. Instalar dependencias
+git clone https://github.com/David-Cabrera00/ganaderia-frontend.git
+```
+
+Entrar a la carpeta del proyecto:
+
+```bash
+cd ganaderia-frontend
+```
+
+Instalar dependencias:
+
+```bash
 npm install
+```
 
-# 2. Crear archivo de variables de entorno (opcional)
-cp .env.example .env
+Ejecutar el proyecto en local:
 
-# 3. Arrancar el servidor de desarrollo
+```bash
 npm run dev
 ```
 
-El frontend corre en **http://localhost:5173**
+Abrir en el navegador:
 
-Esta versión usa datos simulados guardados en `localStorage`.
-
-Credenciales de prueba:
-- `admin@ganaderia.com`
-- `Admin12345`
+```bash
+http://localhost:5173
+```
 
 ---
 
 ## Variables de entorno
 
-Crea un archivo `.env` en la raíz:
+Si el frontend se conecta a un backend, se puede configurar la URL de la API mediante un archivo `.env`.
+
+Ejemplo:
 
 ```env
-VITE_APP_MODE=local
-# Cuando llegue el momento de conectar backend real:
-# VITE_API_URL=http://localhost:8080/api
+VITE_API_URL=https://ganaderia4backend.onrender.com
 ```
 
-Si el backend está en otro host (ej. producción):
-```env
-VITE_API_URL=https://tu-backend.com/api
-```
+> El archivo `.env` no debe subirse al repositorio. Se recomienda subir solo un archivo `.env.example`.
 
 ---
 
-## Estructura de carpetas
+## Credenciales de prueba
 
-```
-src/
-├── api/
-│   ├── httpClient.ts     # Axios + interceptores JWT + AppError
-│   └── services.ts       # Servicios por dominio (AuthService, CowService, etc.)
-│
-├── components/
-│   ├── guards/
-│   │   ├── AuthGuard.tsx   # Protege rutas privadas
-│   │   ├── GuestGuard.tsx  # Protege rutas públicas (login)
-│   │   └── RoleGuard.tsx   # Control por rol
-│   └── layout/
-│       ├── AppLayout.tsx   # Contenedor principal con sidebar
-│       ├── Sidebar.tsx     # Navegación lateral
-│       └── Sidebar.css
-│
-├── features/              # Módulos por funcionalidad
-│   ├── auth/              # Login
-│   ├── dashboard/         # Panel principal
-│   ├── cows/              # Gestión de vacas
-│   ├── collars/           # Gestión de collares
-│   ├── geofences/         # Geocercas
-│   ├── alerts/            # Alertas con paginación
-│   ├── users/             # Usuarios (solo ADMINISTRADOR)
-│   └── locations/         # Historial GPS
-│
-├── router/
-│   └── index.tsx          # Definición de rutas
-│
-├── stores/
-│   └── authStore.ts       # Zustand store con persistencia en localStorage
-│
-├── styles/
-│   └── globals.css        # Sistema de diseño completo
-│
-├── types/
-│   └── index.ts           # Todos los tipos TypeScript (alineados con backend)
-│
-└── utils/
-    ├── helpers.ts          # Labels de enums, formatters de fecha
-    └── validations.ts      # Esquemas Zod para todos los formularios
+```text
+Correo: admin@ganaderia.com
+Contraseña: Admin12345
 ```
 
 ---
 
-## Seguridad y autenticación
+## Estado del proyecto
 
-### Problema del botón "Atrás" — RESUELTO
-Después de hacer login, `navigate('/dashboard', { replace: true })` reemplaza la entrada `/login`
-en el historial del navegador. El botón "atrás" NO puede regresar al login.
-
-Además, `GuestGuard` protege `/login`: si el usuario ya tiene sesión válida,
-es redirigido automáticamente al dashboard.
-
-### Persistencia de sesión
-La sesión (token JWT + datos del usuario) se guarda en `localStorage` via Zustand persist.
-Al recargar la página, la sesión se restaura automáticamente si no ha expirado.
-
-### Expiración de token
-`isSessionValid()` verifica el campo `expiresAt` (calculado como `Date.now() + expiresIn`).
-Si el token expiró, el guard limpia la sesión y redirige al login.
-
-### Interceptor 401
-Si el backend devuelve 401 en cualquier petición, el interceptor de Axios limpia la sesión
-y redirige al login automáticamente.
+- Frontend funcional en entorno local.
+- Interfaz organizada por módulos.
+- Preparado para conexión con backend.
+- Proyecto listo para ser versionado en GitHub.
 
 ---
 
-## Roles y permisos
+## Autor
 
-| Rol | Acceso |
-|---|---|
-| ADMINISTRADOR | Todo el sistema |
-| SUPERVISOR | Dashboard, Vacas, Collares, Geocercas, Alertas, Ubicaciones |
-| OPERADOR | Dashboard, Vacas, Collares, Alertas, Ubicaciones |
-| TECNICO | Dashboard, Collares (CRUD), Alertas, Ubicaciones |
-
-Los menús del sidebar se filtran automáticamente según el rol del usuario.
-
----
-
-## Validaciones implementadas
-
-- ✅ Email sin espacios (onKeyDown + Zod)
-- ✅ Contraseña sin espacios (onKeyDown + Zod)
-- ✅ Contraseña mínimo 8 caracteres
-- ✅ Token de vaca/collar sin espacios
-- ✅ Campos obligatorios
-- ✅ Longitudes máximas alineadas con backend
-- ✅ Números solo numéricos (type="number" + Zod)
-- ✅ Coordenadas geográficas en rango válido
-- ✅ Mensajes de error del backend mostrados en el formulario
-
----
-
-## Estado actual
-
-- Estructura modular fortalecida con `shared`, `layouts`, `features` y wrappers reutilizables.
-- Dashboard rediseñado con enfoque de monitoreo ganadero, foco operativo, radar de salud y accesos rápidos.
-- Sidebar, topbar y login ajustados para sentirse más coherentes con Ganadería 4.0.
-- Proyecto listo para seguir en local sin depender todavía del backend real.
-- Base preparada para la siguiente fase: conexión backend, validación final y despliegue.
-
----
-
-## Build para producción
-
-```bash
-npm run build
-```
-
-Los archivos quedan en `/dist`. Sirve con cualquier servidor estático (Nginx, Apache, etc.).
-
-Para Nginx, agrega esto para que React Router funcione:
-```nginx
-location / {
-  try_files $uri $uri/ /index.html;
-}
-```
+David Cabrera, Luis Diaz.
