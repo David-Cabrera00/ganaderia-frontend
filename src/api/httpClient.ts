@@ -64,7 +64,7 @@ httpClient.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch {
-      // ignorar parse roto
+      
     }
   }
 

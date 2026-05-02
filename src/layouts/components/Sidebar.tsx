@@ -16,6 +16,7 @@ import { ROLE_LABELS } from '@/shared/constants/roles';
 import type { Role } from '@/types';
 import { CattleIcon } from '@/shared/components/ui/CattleIcon';
 import '@/components/layout/Sidebar.css';
+import { AuthService } from '@/api/services';
 
 interface NavItem {
   to: string;
@@ -87,16 +88,22 @@ export function Sidebar() {
             <div className="sidebar-user-role">{session?.role ? ROLE_LABELS[session.role] : 'Sin sesión'}</div>
           </div>
         </div>
-        <button
-          className="btn btn-ghost btn-icon sidebar-logout"
-          onClick={() => {
-            clearSession();
-            navigate(APP_ROUTES.login, { replace: true });
-          }}
-          title="Cerrar sesión"
-        >
-          <LogOut size={17} />
-        </button>
+       <button
+        className="btn btn-ghost btn-icon sidebar-logout"
+        onClick={async () => {
+          try {
+            await AuthService.logout();
+          } catch {
+           
+          }
+
+          clearSession();
+          navigate(APP_ROUTES.login, { replace: true });
+        }}
+        title="Cerrar sesión"
+      >
+        <LogOut size={17} />
+      </button>
       </div>
     </aside>
   );
