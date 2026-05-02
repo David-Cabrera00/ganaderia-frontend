@@ -46,43 +46,26 @@ export class AppError extends Error {
 
 export const httpClient = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 httpClient.interceptors.request.use((config) => {
-  const authKeys = [
-    'auth-storage',
-    'ganaderia_local_session',
-    'ganaderia_session',
-    'user',
-  ];
+  const raw = localStorage.getItem('ganaderia_session');
 
-  let token: string | null = null;
-
-  for (const key of authKeys) {
-    const raw = localStorage.getItem(key);
-    if (!raw) continue;
-
+  if (raw) {
     try {
       const parsed = JSON.parse(raw);
+      const token = parsed?.state?.session?.token;
 
-      token =
-        parsed?.state?.session?.token ||
-        parsed?.session?.token ||
-        parsed?.token ||
-        null;
-
-      if (token) break;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     } catch {
-      continue;
+      // ignorar parse roto
     }
-  }
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;
