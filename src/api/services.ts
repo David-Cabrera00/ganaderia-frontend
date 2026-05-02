@@ -19,7 +19,6 @@ import type {
   LocationRequest,
   DashboardSummary,
   CollarStatus,
-  CowStatus,
   Page,
   DeviceSignalStatus,
 } from '../types';
@@ -197,30 +196,6 @@ const readDb = (): MockDatabase => {
 
 const writeDb = (db: MockDatabase) => {
   localStorage.setItem(DB_KEY, JSON.stringify(db));
-};
-
-const currentSessionUserId = (): number | null => {
-  const keys = [SESSION_KEY, 'ganaderia_local_session', 'ganaderia_session', 'user'];
-
-  for (const key of keys) {
-    const raw = localStorage.getItem(key);
-    if (!raw) continue;
-
-    try {
-      const parsed = JSON.parse(raw) as {
-        state?: { session?: { id?: number } };
-        session?: { id?: number };
-        id?: number;
-      };
-
-      const id = parsed?.state?.session?.id ?? parsed?.session?.id ?? parsed?.id ?? null;
-      if (typeof id === 'number') return id;
-    } catch {
-      continue;
-    }
-  }
-
-  return null;
 };
 
 const publicUser = (user: MockUserRecord): UserResponse => ({
@@ -465,24 +440,86 @@ export class CowService {
   }
 
   static async create(data: CowRequest): Promise<CowResponse> {
-    const response = await httpClient.post(API_ENDPOINTS.cows.base, data);
-    return response.data;
+  await delay();
+  const db = getDb();
+  const internalCode = data.internalCode?.trim() || null;
+
+  if (internalCode) {
+    throwIf(
+      db.cows.some(
+        (cow) =>
+          (cow.internalCode ?? '').toUpperCase() === internalCode.toUpperCase(),
+      ),
+      'Ya existe una vaca con ese código interno.',
+    );
   }
 
-  static async update(id: number, data: CowRequest): Promise<CowResponse> {
-    const response = await httpClient.put(API_ENDPOINTS.cows.byId(id), data);
-    return response.data;
+  let next = db.cows.length + 1;
+  let token = `COW-${String(next).padStart(3, '0')}`;
+
+  while (db.cows.some((cow) => cow.token.toUpperCase() === token)) {
+    next++;
+    token = `COW-${String(next).padStart(3, '0')}`;
   }
+
+  const cow: CowResponse = {
+    id: nextId(db.cows),
+    token,
+    internalCode,
+    name: data.name.trim(),
+    status: data.status,
+    observations: data.observations?.trim() || null,
+  };
+
+  db.cows.unshift(cow);
+  syncDb(db);
+  return clone(cow);
+}
+
+  static async update(id: number, data: CowRequest): Promise<CowResponse> {
+  await delay();
+  const db = getDb();
+  const index = db.cows.findIndex((item) => item.id === id);
+  if (index === -1) throw new Error('Vaca no encontrada.');
+
+  const internalCode = data.internalCode?.trim() || null;
+
+  if (internalCode) {
+    throwIf(
+      db.cows.some(
+        (cow) =>
+          cow.id !== id &&
+          (cow.internalCode ?? '').toUpperCase() === internalCode.toUpperCase(),
+      ),
+      'Ya existe una vaca con ese código interno.',
+    );
+  }
+
+  db.cows[index] = {
+    ...db.cows[index],
+    internalCode,
+    name: data.name.trim(),
+    status: data.status,
+    observations: data.observations?.trim() || null,
+  };
+
+  syncDb(db);
+  return clone(db.cows[index]);
+}
 }
 
 export class CollarService {
   static async create(data: CollarRequest): Promise<CollarResponse> {
     await delay();
     const db = getDb();
-    const token = data.token.trim().toUpperCase();
-    throwIf(db.collars.some((collar) => collar.token.toUpperCase() === token), 'Ya existe un collar con ese token.');
-    throwIf(!token.startsWith('COL-'), 'El token del collar debe iniciar con COL-.');
-    throwIf(db.cows.some((cow) => cow.token.toUpperCase() === token), 'Ese token ya está siendo usado por una vaca.');
+
+    let next = db.collars.length + 1;
+    let token = `COL-${String(next).padStart(3, '0')}`;
+
+    while (db.collars.some((collar) => collar.token.toUpperCase() === token)) {
+      next++;
+      token = `COL-${String(next).padStart(3, '0')}`;
+    }
 
     const collar: CollarResponse = {
       id: nextId(db.collars),
@@ -510,15 +547,9 @@ export class CollarService {
     const db = getDb();
     const index = db.collars.findIndex((item) => item.id === id);
     if (index === -1) throw new Error('Collar no encontrado.');
-    const token = data.token.trim().toUpperCase();
-
-    throwIf(db.collars.some((collar) => collar.id !== id && collar.token.toUpperCase() === token), 'Ya existe un collar con ese token.');
-    throwIf(!token.startsWith('COL-'), 'El token del collar debe iniciar con COL-.');
-    throwIf(db.cows.some((cow) => cow.token.toUpperCase() === token), 'Ese token ya está siendo usado por una vaca.');
 
     db.collars[index] = {
       ...db.collars[index],
-      token,
       status: data.status,
       cowId: data.cowId ?? null,
       batteryLevel: data.batteryLevel ?? null,
