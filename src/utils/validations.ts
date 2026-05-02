@@ -7,11 +7,6 @@ export const loginSchema = z.object({
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const cowSchema = z.object({
-  token: z
-    .string()
-    .min(1, 'El token es obligatorio')
-    .max(50, 'El token no puede superar 50 caracteres')
-    .refine((v) => !/\s/.test(v), 'El token no puede contener espacios'),
   name: z.string().min(1, 'El nombre es obligatorio').max(80, 'Máximo 80 caracteres'),
   status: z.enum(['DENTRO', 'FUERA', 'SIN_UBICACION']),
   internalCode: z.string().max(30, 'Máximo 30 caracteres').optional().or(z.literal('')),
@@ -20,12 +15,6 @@ export const cowSchema = z.object({
 export type CowFormValues = z.infer<typeof cowSchema>;
 
 export const collarSchema = z.object({
-  token: z
-    .string()
-    .min(1, 'El token del collar es obligatorio')
-    .max(50, 'El token no puede superar 50 caracteres')
-    .refine((v) => !/\s/.test(v), 'El token no puede contener espacios')
-    .refine((v) => /^COL-/i.test(v), 'El token del collar debe iniciar con COL-'),
   status: z.enum(['ACTIVO', 'INACTIVO', 'MANTENIMIENTO']),
   cowId: z.number().optional(),
   batteryLevel: z.number().min(0, 'Mínimo 0').max(100, 'Máximo 100').optional(),

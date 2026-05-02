@@ -64,7 +64,6 @@ export interface CowResponse {
 }
 
 export interface CowRequest {
-  token: string;
   internalCode?: string;
   name: string;
   status: CowStatus;
@@ -90,7 +89,6 @@ export interface CollarResponse {
 }
 
 export interface CollarRequest {
-  token: string;
   status: CollarStatus;
   cowId?: number;
   batteryLevel?: number;

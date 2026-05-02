@@ -4,6 +4,7 @@ import axios, { AxiosError } from 'axios';
 const API_URL =
   import.meta.env.VITE_API_URL?.trim() || 'http://localhost:8080';
   console.log('API_URL FRONTEND:', API_URL);
+  
 export class AppError extends Error {
   serverMessage: string;
   status?: number;
@@ -47,7 +48,7 @@ export class AppError extends Error {
 
 export const httpClient = axios.create({
   baseURL: API_URL,
-  timeout: 30000,
+  timeout: 45000,
   headers: {
     'Content-Type': 'application/json',
   },

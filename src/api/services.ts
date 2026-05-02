@@ -454,76 +454,24 @@ export class UserService {
 }
 
 export class CowService {
-  static async create(data: CowRequest): Promise<CowResponse> {
-    await delay();
-    const db = getDb();
-    const token = data.token.trim().toUpperCase();
-    const internalCode = data.internalCode?.trim() || null;
-
-    throwIf(db.cows.some((cow) => cow.token.toUpperCase() === token), 'Ya existe una vaca con ese token.');
-    if (internalCode) throwIf(db.cows.some((cow) => (cow.internalCode ?? '').toUpperCase() === internalCode.toUpperCase()), 'Ya existe una vaca con ese código interno.');
-
-    const cow: CowResponse = {
-      id: nextId(db.cows),
-      token,
-      internalCode,
-      name: data.name.trim(),
-      status: data.status,
-      observations: data.observations?.trim() || null,
-    };
-
-    db.cows.unshift(cow);
-    syncDb(db);
-    return clone(cow);
-  }
-
-  static async update(id: number, data: CowRequest): Promise<CowResponse> {
-    await delay();
-    const db = getDb();
-    const index = db.cows.findIndex((item) => item.id === id);
-    if (index === -1) throw new Error('Vaca no encontrada.');
-
-    const token = data.token.trim().toUpperCase();
-    const internalCode = data.internalCode?.trim() || null;
-
-    throwIf(db.cows.some((cow) => cow.id !== id && cow.token.toUpperCase() === token), 'Ya existe una vaca con ese token.');
-    if (internalCode) throwIf(db.cows.some((cow) => cow.id !== id && (cow.internalCode ?? '').toUpperCase() === internalCode.toUpperCase()), 'Ya existe una vaca con ese código interno.');
-
-    db.cows[index] = {
-      ...db.cows[index],
-      token,
-      internalCode,
-      name: data.name.trim(),
-      status: data.status,
-      observations: data.observations?.trim() || null,
-    };
-
-    syncDb(db);
-    return clone(db.cows[index]);
-  }
-
   static async getAll(): Promise<CowResponse[]> {
-    await delay();
-    return clone(getDb().cows);
+    const response = await httpClient.get(API_ENDPOINTS.cows.base);
+    return response.data;
   }
 
   static async getById(id: number): Promise<CowResponse> {
-    await delay();
-    const cow = getDb().cows.find((item) => item.id === id);
-    if (!cow) throw new Error('Vaca no encontrada.');
-    return clone(cow);
+    const response = await httpClient.get(API_ENDPOINTS.cows.byId(id));
+    return response.data;
   }
 
-  static async getByStatus(status: CowStatus): Promise<CowResponse[]> {
-    await delay();
-    return clone(getDb().cows.filter((item) => item.status === status));
+  static async create(data: CowRequest): Promise<CowResponse> {
+    const response = await httpClient.post(API_ENDPOINTS.cows.base, data);
+    return response.data;
   }
 
-  static async getByToken(token: string): Promise<CowResponse> {
-    await delay();
-    const cow = getDb().cows.find((item) => item.token === token);
-    if (!cow) throw new Error('Vaca no encontrada.');
-    return clone(cow);
+  static async update(id: number, data: CowRequest): Promise<CowResponse> {
+    const response = await httpClient.put(API_ENDPOINTS.cows.byId(id), data);
+    return response.data;
   }
 }
 
