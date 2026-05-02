@@ -1,3 +1,5 @@
+import { httpClient } from './httpClient';
+import { API_ENDPOINTS } from './apiEndpoints';
 import type {
   LoginRequest,
   LoginResponse,
@@ -332,50 +334,21 @@ const throwIf = (condition: boolean, message: string) => {
 
 export class AuthService {
   static async login(data: LoginRequest): Promise<LoginResponse> {
-    await delay();
-    const db = getDb();
-    db.users = Array.isArray(db.users) ? db.users : [];
+    const response = await httpClient.post(API_ENDPOINTS.auth.login, {
+      email: data.email.trim().toLowerCase(),
+      password: data.password,
+    });
 
-    const email = data.email.trim().toLowerCase();
-    const user = db.users.find((item) => item.email.toLowerCase() === email && item.active);
-
-    if (!user || user.password !== data.password) {
-      throw new Error('Credenciales inválidas. Usa admin@ganaderia.com / Admin12345');
-    }
-
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      token: `local-token-${user.id}`,
-      tokenType: 'Bearer',
-      expiresIn: 24 * 60 * 60 * 1000,
-      message: 'Inicio de sesión exitoso',
-    };
+    return response.data;
   }
 
   static async me(): Promise<UserResponse> {
-    await delay();
-    const db = getDb();
-    db.users = Array.isArray(db.users) ? db.users : [];
-
-    const userId = currentSessionUserId();
-    const user = db.users.find((item) => item.id === userId);
-
-    if (!user) {
-      throw new Error('No hay una sesión local válida.');
-    }
-
-    return publicUser(user);
+    const response = await httpClient.get(API_ENDPOINTS.auth.me);
+    return response.data;
   }
 
   static async logout(): Promise<void> {
-    await delay();
-    localStorage.removeItem('auth-storage');
-    localStorage.removeItem('ganaderia_local_session');
     localStorage.removeItem('ganaderia_session');
-    localStorage.removeItem('user');
   }
 }
 
