@@ -215,24 +215,24 @@ export function CollarsPage() {
     setServerError(null);
 
     try {
-      const payload = {
-        status: values.status,
-        cowId: values.cowId,
-        batteryLevel: values.batteryLevel,
-        firmwareVersion: values.firmwareVersion
-          ? sanitizeStrictInput(values.firmwareVersion, 30)
-          : undefined,
-        notes: values.notes ? sanitizeTextInput(values.notes, 250) : undefined,
-        enabled: values.enabled,
-      };
+     const payload = {
+          status: values.status,
+          cowId: values.cowId ?? undefined,
+          batteryLevel: values.batteryLevel ?? undefined,
+          firmwareVersion: values.firmwareVersion
+            ? sanitizeStrictInput(values.firmwareVersion, 30)
+            : undefined,
+          notes: values.notes ? sanitizeTextInput(values.notes, 250) : undefined,
+          enabled: values.enabled ?? true,
+        } as Parameters<typeof CollarService.create>[0];
 
-      if (editing) {
-        await CollarService.update(editing.id, payload);
-        toast.success('Collar actualizado correctamente');
-      } else {
-        await CollarService.create(payload);
-        toast.success('Collar registrado correctamente');
-      }
+        if (editing) {
+          await CollarService.update(editing.id, payload);
+          toast.success('Collar actualizado correctamente');
+        } else {
+          await CollarService.create(payload);
+          toast.success('Collar registrado correctamente');
+        }
 
       setModalOpen(false);
       void loadData();
