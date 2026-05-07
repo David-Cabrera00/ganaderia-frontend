@@ -2,21 +2,26 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  Plus,
-  Pencil,
-  Search,
   AlertCircle,
-  X,
-  MapPin,
-  ShieldCheck,
+  ClipboardList,
+  Eye,
   Filter,
+  Hash,
+  MapPin,
+  Pencil,
+  Plus,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  X,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { CattleIcon } from '@/shared/components/ui/CattleIcon';
 import { CowService } from '@/api/services';
 import { AppError } from '@/shared/errors/AppError';
 import { useAuthStore } from '@/stores/authStore';
 import { cowSchema, type CowFormValues } from '@/utils/validations';
-import { COW_STATUS_COLORS, COW_STATUS_LABELS } from '@/utils/helpers';
+import { COW_STATUS_LABELS } from '@/utils/helpers';
 import {
   sanitizeSearchInput,
   sanitizeStrictInput,
@@ -26,10 +31,37 @@ import type { CowResponse } from '@/types';
 import { PageContainer } from '@/layouts/components/PageContainer';
 import { PageHeader } from '@/layouts/components/PageHeader';
 import { Button } from '@/shared/components/ui/Button';
-import { MetricCard } from '@/shared/components/ui/MetricCard';
-import toast from 'react-hot-toast';
 
 type CowStatusFilter = 'ALL' | 'DENTRO' | 'FUERA' | 'SIN_UBICACION';
+type CowMetricTone = 'info' | 'success' | 'warning' | 'danger';
+
+interface CowMetricItem {
+  label: string;
+  value: string | number;
+  helper: string;
+  tone: CowMetricTone;
+  icon: JSX.Element;
+}
+
+const statusFilters: Array<{ label: string; value: CowStatusFilter }> = [
+  { label: 'Todas', value: 'ALL' },
+  { label: 'Dentro', value: 'DENTRO' },
+  { label: 'Fuera', value: 'FUERA' },
+  { label: 'Sin ubicación', value: 'SIN_UBICACION' },
+];
+
+const cowMetricToneLabels: Record<CowMetricTone, string> = {
+  info: 'Inventario',
+  success: 'Estable',
+  warning: 'Revisión',
+  danger: 'Atención',
+};
+
+function getCowStatusClass(status: CowResponse['status']) {
+  if (status === 'DENTRO') return 'cows-status-inside';
+  if (status === 'FUERA') return 'cows-status-outside';
+  return 'cows-status-unknown';
+}
 
 export function CowsPage() {
   const [cows, setCows] = useState<CowResponse[]>([]);
@@ -61,6 +93,7 @@ export function CowsPage() {
 
   const loadCows = useCallback(async () => {
     setLoading(true);
+
     try {
       const data = await CowService.getAll();
       setCows(data);
@@ -166,6 +199,40 @@ export function CowsPage() {
     (cow) => cow.status === 'SIN_UBICACION',
   ).length;
 
+  const metrics: CowMetricItem[] = [
+    {
+      label: 'Inventario total',
+      value: cows.length,
+      helper: 'Animales registrados en el sistema.',
+      tone: 'info',
+      icon: <CattleIcon width={24} height={24} />,
+    },
+    {
+      label: 'Dentro de geocerca',
+      value: cowsInside,
+      helper: 'Vacas bajo monitoreo estable.',
+      tone: 'success',
+      icon: <ShieldCheck size={24} />,
+    },
+    {
+      label: 'Fuera de perímetro',
+      value: cowsOutside,
+      helper:
+        cowsOutside > 0
+          ? 'Casos que requieren seguimiento.'
+          : 'Sin salidas activas registradas.',
+      tone: cowsOutside > 0 ? 'danger' : 'success',
+      icon: <AlertCircle size={24} />,
+    },
+    {
+      label: 'Sin ubicación',
+      value: cowsWithoutLocation,
+      helper: 'Pendientes de lectura GPS reciente.',
+      tone: cowsWithoutLocation > 0 ? 'warning' : 'info',
+      icon: <MapPin size={24} />,
+    },
+  ];
+
   return (
     <>
       <PageHeader
@@ -176,51 +243,95 @@ export function CowsPage() {
         actions={
           canWrite ? (
             <Button size="sm" onClick={openCreate}>
-              <Plus size={15} /> Nueva vaca
+              <Plus size={15} />
+              Nueva vaca
             </Button>
           ) : undefined
         }
       />
 
       <PageContainer>
-        <section className="overview-grid">
-          <MetricCard
-            icon={<CattleIcon width={20} height={20} />}
-            label="Inventario total"
-            value={cows.length}
-            helper="Animales registrados en el sistema"
-            tone="info"
-          />
-          <MetricCard
-            icon={<ShieldCheck size={20} />}
-            label="Dentro de geocerca"
-            value={cowsInside}
-            helper="Vacas bajo monitoreo estable"
-            tone="success"
-          />
-          <MetricCard
-            icon={<AlertCircle size={20} />}
-            label="Fuera de perímetro"
-            value={cowsOutside}
-            helper="Casos que requieren seguimiento"
-            tone={cowsOutside > 0 ? 'danger' : 'success'}
-          />
-          <MetricCard
-            icon={<MapPin size={20} />}
-            label="Sin ubicación"
-            value={cowsWithoutLocation}
-            helper="Pendientes de lectura GPS reciente"
-            tone={cowsWithoutLocation > 0 ? 'warning' : 'info'}
-          />
+        <section className="cows-premium-hero card">
+          <div className="cows-premium-hero-copy">
+            <span className="cows-premium-eyebrow">
+              <Sparkles size={14} />
+              Gestión del hato
+            </span>
+
+            <h2>Inventario visual de vacas y estado operativo del monitoreo</h2>
+
+            <p>
+              Consulta el estado de cada animal, revisa tokens, códigos internos y
+              observaciones sin afectar la trazabilidad del sistema.
+            </p>
+
+            <div className="cows-premium-pills">
+              <span>
+                <CattleIcon width={14} height={14} />
+                {cows.length} registradas
+              </span>
+              <span>
+                <ShieldCheck size={14} />
+                {cowsInside} dentro
+              </span>
+              <span>
+                <AlertCircle size={14} />
+                {cowsOutside} fuera
+              </span>
+            </div>
+          </div>
+
+          <div className="cows-premium-hero-card">
+            <span>Vaca seleccionada</span>
+            <strong>{selectedCow?.name ?? '—'}</strong>
+            <small>
+              {selectedCow
+                ? `Token ${selectedCow.token}`
+                : 'Selecciona una fila para ver el detalle rápido.'}
+            </small>
+          </div>
         </section>
 
-        <div className="toolbar toolbar-panel">
-          <div className="toolbar-left">
-            <div className="search-input-wrapper">
+        <section className="cows-premium-metrics">
+          {metrics.map((metric) => (
+            <article
+              key={metric.label}
+              className={`cows-premium-metric cows-premium-metric-${metric.tone}`}
+            >
+              <div className="cows-premium-metric-top">
+                <div className="cows-premium-metric-icon">{metric.icon}</div>
+
+                <span className="cows-premium-metric-status">
+                  <Sparkles size={13} />
+                  {cowMetricToneLabels[metric.tone]}
+                </span>
+              </div>
+
+              <div className="cows-premium-metric-copy">
+                <span>{metric.label}</span>
+                <strong>{metric.value}</strong>
+                <p>{metric.helper}</p>
+              </div>
+            </article>
+          ))}
+        </section>
+
+        <section className="card cows-premium-toolbar">
+          <div className="cows-premium-toolbar-main">
+            <div className="cows-premium-toolbar-title">
+              <Search size={18} />
+
+              <div>
+                <strong>Búsqueda del inventario</strong>
+                <span>Filtra por nombre, token o código interno.</span>
+              </div>
+            </div>
+
+            <div className="cows-premium-search-box">
               <Search size={15} className="search-icon" />
               <input
-                className="search-input"
-                placeholder="Buscar por nombre, token o código interno..."
+                className="search-input cows-premium-search"
+                placeholder="Buscar vaca, token o código..."
                 value={search}
                 maxLength={60}
                 onChange={(e) =>
@@ -230,81 +341,85 @@ export function CowsPage() {
             </div>
           </div>
 
-          <span className="page-summary-note">
-            Mostrando {filtered.length} de {cows.length} registros
-          </span>
-        </div>
+          <div className="cows-premium-toolbar-note">
+            Mostrando {filtered.length} de {cows.length} registros del inventario
+          </div>
+        </section>
 
-        <section className="card" style={{ marginTop: 16 }}>
-          <div className="card-header">
-            <span className="card-title">
-              <Filter size={16} /> Filtros rápidos
-            </span>
+        <section className="card cows-premium-filters-panel">
+          <div className="card-header cows-premium-section-header">
+            <div>
+              <span className="card-title">
+                <Filter size={16} />
+                Filtros rápidos
+              </span>
+              <p className="cows-premium-section-subtitle">
+                Cambia la vista según el estado operativo de las vacas.
+              </p>
+            </div>
           </div>
 
-          <div
-            className="card-body"
-            style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}
-          >
-            {[
-              { label: 'Todas', value: 'ALL' as const },
-              { label: 'Dentro', value: 'DENTRO' as const },
-              { label: 'Fuera', value: 'FUERA' as const },
-              { label: 'Sin ubicación', value: 'SIN_UBICACION' as const },
-            ].map((item) => (
-              <button
-                key={item.value}
-                type="button"
-                className="btn btn-secondary btn-sm"
-                style={
-                  statusFilter === item.value
-                    ? {
-                        background: 'var(--accent-dim)',
-                        borderColor: 'var(--accent)',
-                        color: 'var(--accent)',
-                      }
-                    : undefined
-                }
-                onClick={() => setStatusFilter(item.value)}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="card-body">
+            <div className="cows-premium-filter-chips">
+              {statusFilters.map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  className={`cows-premium-filter-chip ${
+                    statusFilter === item.value ? 'active' : ''
+                  }`}
+                  onClick={() => setStatusFilter(item.value)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 
         {selectedCow ? (
-          <section className="card" style={{ marginTop: 16 }}>
-            <div className="card-header">
-              <span className="card-title">Detalle rápido</span>
-              <span className={`badge ${COW_STATUS_COLORS[selectedCow.status]}`}>
+          <section className="card cows-premium-detail-panel">
+            <div className="card-header cows-premium-section-header">
+              <div>
+                <span className="card-title">
+                  <Eye size={16} />
+                  Detalle rápido
+                </span>
+                <p className="cows-premium-section-subtitle">
+                  Resumen visual del animal seleccionado.
+                </p>
+              </div>
+
+              <span
+                className={`cows-status-chip ${getCowStatusClass(
+                  selectedCow.status,
+                )}`}
+              >
                 {COW_STATUS_LABELS[selectedCow.status]}
               </span>
             </div>
 
-            <div
-              className="card-body"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-                gap: 16,
-              }}
-            >
-              <div>
-                <div className="report-summary-label">Nombre</div>
-                <strong>{selectedCow.name}</strong>
-              </div>
-              <div>
-                <div className="report-summary-label">Token</div>
-                <strong>{selectedCow.token}</strong>
-              </div>
-              <div>
-                <div className="report-summary-label">Código interno</div>
-                <strong>{selectedCow.internalCode ?? '—'}</strong>
-              </div>
-              <div>
-                <div className="report-summary-label">Observaciones</div>
-                <strong>{selectedCow.observations ?? 'Sin observaciones'}</strong>
+            <div className="card-body">
+              <div className="cows-premium-detail-grid">
+                <div className="cows-premium-detail-item">
+                  <span>Nombre</span>
+                  <strong>{selectedCow.name}</strong>
+                </div>
+
+                <div className="cows-premium-detail-item">
+                  <span>Token</span>
+                  <strong>{selectedCow.token}</strong>
+                </div>
+
+                <div className="cows-premium-detail-item">
+                  <span>Código interno</span>
+                  <strong>{selectedCow.internalCode ?? '—'}</strong>
+                </div>
+
+                <div className="cows-premium-detail-item">
+                  <span>Observaciones</span>
+                  <strong>{selectedCow.observations ?? 'Sin observaciones'}</strong>
+                </div>
               </div>
             </div>
           </section>
@@ -315,103 +430,137 @@ export function CowsPage() {
             <div className="loading-spinner" />
           </div>
         ) : (
-          <div className="table-wrapper" style={{ marginTop: 16 }}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Token</th>
-                  <th>Código interno</th>
-                  <th>Estado</th>
-                  <th>Observaciones</th>
-                  {canWrite ? <th style={{ width: 60 }}>Editar</th> : null}
-                </tr>
-              </thead>
+          <section className="card cows-premium-table-panel">
+            <div className="card-header cows-premium-section-header">
+              <div>
+                <span className="card-title">
+                  <ClipboardList size={16} />
+                  Inventario ganadero
+                </span>
+                <p className="cows-premium-section-subtitle">
+                  Listado de vacas registradas y su estado operativo actual.
+                </p>
+              </div>
 
-              <tbody>
-                {filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={canWrite ? 6 : 5}>
-                      <div className="empty-state">
-                        <CattleIcon
-                          width={32}
-                          height={32}
-                          className="empty-state-icon"
-                        />
-                        <span className="empty-state-text">
-                          No se encontraron vacas con el filtro actual
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  filtered.map((cow) => (
-                    <tr
-                      key={cow.id}
-                      onClick={() => setSelectedCowId(cow.id)}
-                      style={{
-                        cursor: 'pointer',
-                        background:
-                          selectedCowId === cow.id
-                            ? 'var(--accent-dim)'
-                            : undefined,
-                      }}
-                    >
-                      <td style={{ fontWeight: 500 }}>{cow.name}</td>
-                      <td className="td-mono">{cow.token}</td>
-                      <td className="td-mono">{cow.internalCode ?? '—'}</td>
-                      <td>
-                        <span className={`badge ${COW_STATUS_COLORS[cow.status]}`}>
-                          {COW_STATUS_LABELS[cow.status]}
-                        </span>
-                      </td>
-                      <td
-                        style={{
-                          color: 'var(--text-secondary)',
-                          maxWidth: 260,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {cow.observations ?? '—'}
-                      </td>
-                      {canWrite ? (
-                        <td>
-                          <button
-                            className="btn btn-ghost btn-icon btn-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openEdit(cow);
-                            }}
-                            title="Editar vaca"
-                          >
-                            <Pencil size={14} />
-                          </button>
-                        </td>
-                      ) : null}
+              <span className="cows-premium-table-badge">
+                {filtered.length} registros
+              </span>
+            </div>
+
+            <div className="card-body">
+              <div className="cows-premium-table-shell">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Token</th>
+                      <th>Código interno</th>
+                      <th>Estado</th>
+                      <th>Observaciones</th>
+                      {canWrite ? <th style={{ width: 90 }}>Editar</th> : null}
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+
+                  <tbody>
+                    {filtered.length === 0 ? (
+                      <tr>
+                        <td colSpan={canWrite ? 6 : 5}>
+                          <div className="empty-state">
+                            <CattleIcon
+                              width={32}
+                              height={32}
+                              className="empty-state-icon"
+                            />
+                            <span className="empty-state-text">
+                              No se encontraron vacas con el filtro actual.
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      filtered.map((cow) => (
+                        <tr
+                          key={cow.id}
+                          className={
+                            selectedCowId === cow.id ? 'cows-row-selected' : ''
+                          }
+                          onClick={() => setSelectedCowId(cow.id)}
+                        >
+                          <td>
+                            <div className="cows-name-cell">
+                              <div className="cows-name-icon">
+                                <CattleIcon width={16} height={16} />
+                              </div>
+
+                              <strong>{cow.name}</strong>
+                            </div>
+                          </td>
+
+                          <td>
+                            <span className="cows-token-chip">
+                              <Hash size={13} />
+                              {cow.token}
+                            </span>
+                          </td>
+
+                          <td className="td-mono">{cow.internalCode ?? '—'}</td>
+
+                          <td>
+                            <span
+                              className={`cows-status-chip ${getCowStatusClass(
+                                cow.status,
+                              )}`}
+                            >
+                              {COW_STATUS_LABELS[cow.status]}
+                            </span>
+                          </td>
+
+                          <td>
+                            <span className="cows-observation-text">
+                              {cow.observations ?? '—'}
+                            </span>
+                          </td>
+
+                          {canWrite ? (
+                            <td>
+                              <button
+                                className="btn btn-ghost btn-icon btn-sm cows-edit-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openEdit(cow);
+                                }}
+                                title="Editar vaca"
+                              >
+                                <Pencil size={14} />
+                              </button>
+                            </td>
+                          ) : null}
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
         )}
       </PageContainer>
 
       {modalOpen ? (
         <div
-          className="modal-backdrop"
+          className="modal-backdrop cows-premium-modal-backdrop"
           onClick={(e) => {
             if (e.target === e.currentTarget) setModalOpen(false);
           }}
         >
-          <div className="modal">
+          <div className="modal cows-premium-modal">
             <div className="modal-header">
               <span className="modal-title">
                 {editing ? 'Editar vaca' : 'Registrar nueva vaca'}
               </span>
+
               <button
+                type="button"
                 className="btn btn-ghost btn-icon"
                 onClick={() => setModalOpen(false)}
               >
@@ -421,6 +570,21 @@ export function CowsPage() {
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
               <div className="modal-body">
+                <div className="cows-premium-modal-summary">
+                  <div className="cows-premium-modal-icon">
+                    <CattleIcon width={22} height={22} />
+                  </div>
+
+                  <div>
+                    <strong>{editing ? editing.name : 'Nuevo registro del hato'}</strong>
+                    <span>
+                      {editing
+                        ? `Token ${editing.token}`
+                        : 'El token será gestionado automáticamente.'}
+                    </span>
+                  </div>
+                </div>
+
                 {serverError ? (
                   <div className="alert-banner error" style={{ marginBottom: 16 }}>
                     <AlertCircle
@@ -441,12 +605,7 @@ export function CowsPage() {
                         readOnly
                         disabled
                       />
-                      <span
-                        style={{
-                          fontSize: '0.72rem',
-                          color: 'var(--text-muted)',
-                        }}
-                      >
+                      <span className="cows-premium-helper-text">
                         El token lo genera el backend y no se puede editar.
                       </span>
                     </div>
@@ -465,7 +624,8 @@ export function CowsPage() {
                     />
                     {errors.name ? (
                       <span className="form-error">
-                        <AlertCircle size={11} /> {errors.name.message}
+                        <AlertCircle size={11} />
+                        {errors.name.message}
                       </span>
                     ) : null}
                   </div>
@@ -485,7 +645,8 @@ export function CowsPage() {
                     />
                     {errors.internalCode ? (
                       <span className="form-error">
-                        <AlertCircle size={11} /> {errors.internalCode.message}
+                        <AlertCircle size={11} />
+                        {errors.internalCode.message}
                       </span>
                     ) : null}
                   </div>
@@ -502,7 +663,8 @@ export function CowsPage() {
                     </select>
                     {errors.status ? (
                       <span className="form-error">
-                        <AlertCircle size={11} /> {errors.status.message}
+                        <AlertCircle size={11} />
+                        {errors.status.message}
                       </span>
                     ) : null}
                   </div>
@@ -523,7 +685,8 @@ export function CowsPage() {
                   />
                   {errors.observations ? (
                     <span className="form-error">
-                      <AlertCircle size={11} /> {errors.observations.message}
+                      <AlertCircle size={11} />
+                      {errors.observations.message}
                     </span>
                   ) : null}
                 </div>
@@ -548,7 +711,7 @@ export function CowsPage() {
                       <span
                         className="loading-spinner"
                         style={{ width: 14, height: 14, borderWidth: 2 }}
-                      />{' '}
+                      />
                       Guardando...
                     </>
                   ) : editing ? (
