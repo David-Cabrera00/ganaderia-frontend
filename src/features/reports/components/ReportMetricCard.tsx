@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { TrendingUp } from 'lucide-react';
 
 type ReportMetricTone = 'default' | 'success' | 'warning' | 'danger';
 
@@ -10,26 +11,53 @@ interface ReportMetricCardProps {
   tone?: ReportMetricTone;
 }
 
-const toneStyles: Record<ReportMetricTone, { borderTop: string; iconBg: string; iconColor: string; valueColor: string }> = {
-  default: { borderTop: '3px solid rgba(91, 140, 255, 0.35)', iconBg: 'rgba(91, 140, 255, 0.08)', iconColor: 'var(--blue)', valueColor: 'var(--text-primary)' },
-  success: { borderTop: '3px solid rgba(91, 140, 255, 0.35)', iconBg: 'rgba(91, 140, 255, 0.08)', iconColor: 'var(--blue)', valueColor: 'var(--blue)' },
-  warning: { borderTop: '3px solid rgba(214, 179, 106, 0.45)', iconBg: 'rgba(214, 179, 106, 0.10)', iconColor: 'var(--accent)', valueColor: 'var(--accent)' },
-  danger: { borderTop: '3px solid rgba(239, 107, 99, 0.45)', iconBg: 'rgba(239, 107, 99, 0.10)', iconColor: 'var(--red)', valueColor: 'var(--red)' },
+const toneLabels: Record<ReportMetricTone, string> = {
+  default: 'Monitoreo',
+  success: 'Estable',
+  warning: 'Preventivo',
+  danger: 'Crítico',
 };
 
-export function ReportMetricCard({ title, value, description, icon, tone = 'default' }: ReportMetricCardProps) {
-  const palette = toneStyles[tone];
+function formatMetricValue(value: string | number) {
+  if (typeof value === 'number') {
+    return new Intl.NumberFormat('es-CO').format(value);
+  }
+
+  return value;
+}
+
+export function ReportMetricCard({
+  title,
+  value,
+  description,
+  icon,
+  tone = 'default',
+}: ReportMetricCardProps) {
   return (
-    <article className="card" style={{ borderTop: palette.borderTop, minHeight: 170 }}>
-      <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 18, height: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontSize: '0.84rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>{title}</span>
-            <strong style={{ fontSize: '2.4rem', lineHeight: 1, fontWeight: 800, color: palette.valueColor }}>{value}</strong>
-          </div>
-          <div style={{ width: 58, height: 58, borderRadius: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: palette.iconBg, color: palette.iconColor, flexShrink: 0, opacity: 0.95 }}>{icon}</div>
+    <article className={`report-premium-card report-premium-card-${tone}`}>
+      <div className="report-premium-card-glow" />
+
+      <div className="report-premium-card-top">
+        <div className="report-premium-icon">
+          {icon}
         </div>
-        <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.6 }}>{description}</p>
+
+        <span className="report-premium-status">
+          <TrendingUp size={13} />
+          {toneLabels[tone]}
+        </span>
+      </div>
+
+      <div className="report-premium-content">
+        <span className="report-premium-title">{title}</span>
+
+        <strong className="report-premium-value">
+          {formatMetricValue(value)}
+        </strong>
+
+        <p className="report-premium-description">
+          {description}
+        </p>
       </div>
     </article>
   );
