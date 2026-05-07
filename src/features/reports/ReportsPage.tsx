@@ -3,6 +3,7 @@ import {
   Activity,
   AlertTriangle,
   Bell,
+  CheckCircle2,
   Download,
   FileText,
   MapPinned,
@@ -41,29 +42,33 @@ interface InsightItem {
   tone: InsightTone;
 }
 
-const insightToneStyles: Record<
+const insightToneMeta: Record<
   InsightTone,
-  { border: string; background: string; dot: string }
+  {
+    label: string;
+    dotClass: string;
+    cardClass: string;
+  }
 > = {
   success: {
-    border: '1px solid rgba(91, 140, 255, 0.18)',
-    background: 'rgba(91, 140, 255, 0.05)',
-    dot: 'var(--blue)',
+    label: 'Estable',
+    dotClass: 'report-insight-dot-success',
+    cardClass: 'report-insight-success',
   },
   info: {
-    border: '1px solid rgba(91, 140, 255, 0.18)',
-    background: 'rgba(91, 140, 255, 0.05)',
-    dot: 'var(--blue)',
+    label: 'Monitoreo',
+    dotClass: 'report-insight-dot-info',
+    cardClass: 'report-insight-info',
   },
   warning: {
-    border: '1px solid rgba(214, 179, 106, 0.22)',
-    background: 'rgba(214, 179, 106, 0.06)',
-    dot: 'var(--accent)',
+    label: 'Preventivo',
+    dotClass: 'report-insight-dot-warning',
+    cardClass: 'report-insight-warning',
   },
   danger: {
-    border: '1px solid rgba(239, 107, 99, 0.22)',
-    background: 'rgba(239, 107, 99, 0.06)',
-    dot: 'var(--red)',
+    label: 'Crítico',
+    dotClass: 'report-insight-dot-danger',
+    cardClass: 'report-insight-danger',
   },
 };
 
@@ -216,6 +221,13 @@ export function ReportsPage() {
       ? 'Atención preventiva'
       : 'Operación estable';
 
+  const executiveToneClass =
+    executiveTone === 'Operación estable'
+      ? 'report-tone-stable'
+      : executiveTone === 'Atención preventiva'
+      ? 'report-tone-warning'
+      : 'report-tone-danger';
+
   if (loading) {
     return (
       <>
@@ -297,258 +309,98 @@ export function ReportsPage() {
           </div>
         ) : null}
 
-        <section className="card" style={{ marginTop: 18 }}>
-          <div className="card-header">
+        <section className="card report-panel" style={{ marginTop: 18 }}>
+          <div className="card-header report-panel-header">
             <span className="card-title">Análisis inteligente del sistema</span>
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                color: 'var(--accent)',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-              }}
-            >
+
+            <div className="report-panel-badge">
               <Sparkles size={14} />
               IA analítica
             </div>
           </div>
 
           <div className="card-body">
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                gap: 14,
-              }}
-            >
+            <div className="report-insights-grid">
               {smartInsights.map((item) => {
-                const tone = insightToneStyles[item.tone];
+                const tone = insightToneMeta[item.tone];
 
                 return (
                   <article
                     key={item.id}
-                    style={{
-                      border: tone.border,
-                      background: tone.background,
-                      borderRadius: 16,
-                      padding: 16,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 10,
-                    }}
+                    className={`report-insight-card ${tone.cardClass}`}
                   >
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: 999,
-                          background: tone.dot,
-                          flexShrink: 0,
-                        }}
-                      />
-                      <strong
-                        style={{
-                          fontSize: '0.98rem',
-                          color: 'var(--text-primary)',
-                        }}
-                      >
-                        {item.title}
-                      </strong>
+                    <div className="report-insight-top">
+                      <div className="report-insight-heading">
+                        <span className={`report-insight-dot ${tone.dotClass}`} />
+                        <strong>{item.title}</strong>
+                      </div>
+
+                      <span className="report-insight-badge">{tone.label}</span>
                     </div>
 
-                    <span
-                      style={{
-                        color: 'var(--text-secondary)',
-                        fontSize: '0.9rem',
-                        lineHeight: 1.55,
-                      }}
-                    >
-                      {item.description}
-                    </span>
+                    <p className="report-insight-description">{item.description}</p>
 
-                    <small
-                      style={{
-                        color: 'var(--text-muted)',
-                        fontSize: '0.8rem',
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      Sugerencia: {item.recommendation}
-                    </small>
+                    <div className="report-insight-recommendation">
+                      <span>Sugerencia</span>
+                      <p>{item.recommendation}</p>
+                    </div>
                   </article>
                 );
               })}
             </div>
 
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: 16,
-                marginTop: 18,
-              }}
-            >
-              <section
-                style={{
-                  border: '1px solid var(--border)',
-                  borderRadius: 16,
-                  background: 'var(--bg-surface)',
-                  padding: 16,
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 12,
-                    marginBottom: 14,
-                  }}
-                >
-                  <strong style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>
-                    Estado ejecutivo
-                  </strong>
-                  <div
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      color:
-                        executiveTone === 'Operación estable'
-                          ? 'var(--blue)'
-                          : executiveTone === 'Atención preventiva'
-                          ? 'var(--accent)'
-                          : 'var(--red)',
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                    }}
-                  >
+            <div className="report-executive-grid">
+              <section className="report-subpanel">
+                <div className="report-subpanel-header">
+                  <strong>Estado ejecutivo</strong>
+
+                  <div className={`report-tone-badge ${executiveToneClass}`}>
                     <Activity size={14} />
                     {executiveTone}
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-                    gap: 12,
-                  }}
-                >
-                  <div
-                    style={{
-                      border: '1px solid var(--border)',
-                      borderRadius: 14,
-                      padding: 12,
-                      background: 'var(--bg-base)',
-                    }}
-                  >
-                    <div className="report-summary-label">Última ubicación</div>
+                <div className="report-summary-grid">
+                  <div className="report-summary-metric">
+                    <span className="report-summary-label">Última ubicación</span>
                     <strong>{formatDateTime(summary?.latestLocationTimestamp ?? null)}</strong>
                   </div>
 
-                  <div
-                    style={{
-                      border: '1px solid var(--border)',
-                      borderRadius: 14,
-                      padding: 12,
-                      background: 'var(--bg-base)',
-                    }}
-                  >
-                    <div className="report-summary-label">Alertas geocerca</div>
+                  <div className="report-summary-metric">
+                    <span className="report-summary-label">Alertas geocerca</span>
                     <strong>{summary?.pendingExitGeofenceAlerts ?? 0}</strong>
                   </div>
 
-                  <div
-                    style={{
-                      border: '1px solid var(--border)',
-                      borderRadius: 14,
-                      padding: 12,
-                      background: 'var(--bg-base)',
-                    }}
-                  >
-                    <div className="report-summary-label">Alertas collar offline</div>
+                  <div className="report-summary-metric">
+                    <span className="report-summary-label">Alertas collar offline</span>
                     <strong>{summary?.pendingCollarOfflineAlerts ?? 0}</strong>
                   </div>
 
-                  <div
-                    style={{
-                      border: '1px solid var(--border)',
-                      borderRadius: 14,
-                      padding: 12,
-                      background: 'var(--bg-base)',
-                    }}
-                  >
-                    <div className="report-summary-label">Estado general</div>
+                  <div className="report-summary-metric">
+                    <span className="report-summary-label">Estado general</span>
                     <strong>{executiveTone}</strong>
                   </div>
                 </div>
               </section>
 
-              <section
-                style={{
-                  border: '1px solid var(--border)',
-                  borderRadius: 16,
-                  background: 'var(--bg-surface)',
-                  padding: 16,
-                }}
-              >
-                <strong
-                  style={{
-                    display: 'block',
-                    fontSize: '1rem',
-                    color: 'var(--text-primary)',
-                    marginBottom: 12,
-                  }}
-                >
-                  Acciones sugeridas
-                </strong>
+              <section className="report-subpanel">
+                <div className="report-subpanel-header">
+                  <strong>Acciones sugeridas</strong>
 
-                <div
-                  style={{
-                    display: 'grid',
-                    gap: 10,
-                  }}
-                >
+                  <div className="report-tone-badge report-tone-warning">
+                    <AlertTriangle size={14} />
+                    Prioridad operativa
+                  </div>
+                </div>
+
+                <div className="report-actions-list">
                   {executiveActions.map((action, index) => (
-                    <div
-                      key={`${action}-${index}`}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: 10,
-                        padding: 12,
-                        border: '1px solid var(--border)',
-                        borderRadius: 14,
-                        background: 'var(--bg-base)',
-                      }}
-                    >
-                      <AlertTriangle
-                        size={16}
-                        style={{
-                          marginTop: 2,
-                          color: 'var(--accent)',
-                          flexShrink: 0,
-                        }}
-                      />
-                      <span
-                        style={{
-                          color: 'var(--text-secondary)',
-                          fontSize: '0.9rem',
-                          lineHeight: 1.55,
-                        }}
-                      >
-                        {action}
-                      </span>
+                    <div key={`${action}-${index}`} className="report-action-item">
+                      <div className="report-action-icon">
+                        <CheckCircle2 size={16} />
+                      </div>
+
+                      <span>{action}</span>
                     </div>
                   ))}
                 </div>
@@ -557,17 +409,11 @@ export function ReportsPage() {
           </div>
         </section>
 
-        <section className="card" style={{ marginTop: 18 }}>
-          <div className="card-header">
+        <section className="card report-panel" style={{ marginTop: 18 }}>
+          <div className="card-header report-panel-header">
             <span className="card-title">Detalle operativo</span>
 
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 8,
-              }}
-            >
+            <div className="report-detail-tabs">
               {[
                 { key: 'alerts', label: 'Alertas', value: criticalAlerts.length },
                 { key: 'cows', label: 'Vacas fuera', value: cowsOutside.length },
@@ -576,16 +422,7 @@ export function ReportsPage() {
                 <button
                   key={tab.key}
                   type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={
-                    activeTab === tab.key
-                      ? {
-                          background: 'var(--accent-dim)',
-                          borderColor: 'var(--accent)',
-                          color: 'var(--accent)',
-                        }
-                      : undefined
-                  }
+                  className={`report-tab-chip ${activeTab === tab.key ? 'active' : ''}`}
                   onClick={() => setActiveTab(tab.key as ReportTab)}
                 >
                   {tab.label} · {tab.value}
@@ -595,97 +432,99 @@ export function ReportsPage() {
           </div>
 
           <div className="card-body">
-            {activeTab === 'alerts' ? (
-              <Table
-                columns={[
-                  {
-                    key: 'type',
-                    header: 'Tipo',
-                    render: (item: AlertResponse) => ALERT_TYPE_LABELS[item.type],
-                  },
-                  {
-                    key: 'cow',
-                    header: 'Vaca',
-                    render: (item: AlertResponse) => item.cowName ?? '—',
-                  },
-                  {
-                    key: 'date',
-                    header: 'Fecha',
-                    render: (item: AlertResponse) => formatDateTime(item.createdAt),
-                  },
-                ]}
-                data={criticalAlerts.slice(0, 8)}
-                emptyMessage="No hay alertas críticas registradas en este momento."
-                rowKey={(item) => item.id}
-              />
-            ) : null}
-
-            {activeTab === 'cows' ? (
-              <Table
-                columns={[
-                  {
-                    key: 'name',
-                    header: 'Nombre',
-                    render: (item: CowResponse) => item.name,
-                  },
-                  {
-                    key: 'token',
-                    header: 'Token',
-                    render: (item: CowResponse) => item.token,
-                  },
-                  {
-                    key: 'status',
-                    header: 'Estado',
-                    render: (item: CowResponse) => COW_STATUS_LABELS[item.status],
-                  },
-                ]}
-                data={cowsOutside}
-                emptyMessage="No hay vacas fuera de geocerca en este momento."
-                rowKey={(item) => item.id}
-              />
-            ) : null}
-
-            {activeTab === 'locations' ? (
-              recentLocations.length === 0 ? (
-                <div className="empty-state">
-                  <FileText size={30} className="empty-state-icon" />
-                  <strong>Sin historial reciente</strong>
-                  <span className="empty-state-text">
-                    Todavía no hay ubicaciones recientes registradas.
-                  </span>
-                </div>
-              ) : (
+            <div className="report-table-shell">
+              {activeTab === 'alerts' ? (
                 <Table
                   columns={[
                     {
-                      key: 'cowName',
+                      key: 'type',
+                      header: 'Tipo',
+                      render: (item: AlertResponse) => ALERT_TYPE_LABELS[item.type],
+                    },
+                    {
+                      key: 'cow',
                       header: 'Vaca',
-                      render: (item: LocationResponse) => item.cowName,
+                      render: (item: AlertResponse) => item.cowName ?? '—',
                     },
                     {
-                      key: 'coordinates',
-                      header: 'Coordenadas',
-                      render: (item: LocationResponse) =>
-                        `${item.latitude.toFixed(4)}, ${item.longitude.toFixed(4)}`,
-                    },
-                    {
-                      key: 'inside',
-                      header: 'Dentro geocerca',
-                      render: (item: LocationResponse) =>
-                        item.insideGeofence ? 'Sí' : 'No',
-                    },
-                    {
-                      key: 'recordedAt',
-                      header: 'Registrada',
-                      render: (item: LocationResponse) =>
-                        formatDateTime(item.recordedAt),
+                      key: 'date',
+                      header: 'Fecha',
+                      render: (item: AlertResponse) => formatDateTime(item.createdAt),
                     },
                   ]}
-                  data={recentLocations.slice(0, 8)}
+                  data={criticalAlerts.slice(0, 8)}
+                  emptyMessage="No hay alertas críticas registradas en este momento."
                   rowKey={(item) => item.id}
                 />
-              )
-            ) : null}
+              ) : null}
+
+              {activeTab === 'cows' ? (
+                <Table
+                  columns={[
+                    {
+                      key: 'name',
+                      header: 'Nombre',
+                      render: (item: CowResponse) => item.name,
+                    },
+                    {
+                      key: 'token',
+                      header: 'Token',
+                      render: (item: CowResponse) => item.token,
+                    },
+                    {
+                      key: 'status',
+                      header: 'Estado',
+                      render: (item: CowResponse) => COW_STATUS_LABELS[item.status],
+                    },
+                  ]}
+                  data={cowsOutside}
+                  emptyMessage="No hay vacas fuera de geocerca en este momento."
+                  rowKey={(item) => item.id}
+                />
+              ) : null}
+
+              {activeTab === 'locations' ? (
+                recentLocations.length === 0 ? (
+                  <div className="empty-state">
+                    <FileText size={30} className="empty-state-icon" />
+                    <strong>Sin historial reciente</strong>
+                    <span className="empty-state-text">
+                      Todavía no hay ubicaciones recientes registradas.
+                    </span>
+                  </div>
+                ) : (
+                  <Table
+                    columns={[
+                      {
+                        key: 'cowName',
+                        header: 'Vaca',
+                        render: (item: LocationResponse) => item.cowName,
+                      },
+                      {
+                        key: 'coordinates',
+                        header: 'Coordenadas',
+                        render: (item: LocationResponse) =>
+                          `${item.latitude.toFixed(4)}, ${item.longitude.toFixed(4)}`,
+                      },
+                      {
+                        key: 'inside',
+                        header: 'Dentro geocerca',
+                        render: (item: LocationResponse) =>
+                          item.insideGeofence ? 'Sí' : 'No',
+                      },
+                      {
+                        key: 'recordedAt',
+                        header: 'Registrada',
+                        render: (item: LocationResponse) =>
+                          formatDateTime(item.recordedAt),
+                      },
+                    ]}
+                    data={recentLocations.slice(0, 8)}
+                    rowKey={(item) => item.id}
+                  />
+                )
+              ) : null}
+            </div>
           </div>
         </section>
       </PageContainer>
