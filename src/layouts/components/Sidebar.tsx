@@ -87,16 +87,17 @@ export function Sidebar() {
             <div className="sidebar-user-role">{session?.role ? ROLE_LABELS[session.role] : 'Sin sesión'}</div>
           </div>
         </div>
-        <button
-          className="btn btn-ghost btn-icon sidebar-logout"
-          onClick={() => {
-            clearSession();
-            navigate(APP_ROUTES.login, { replace: true });
-          }}
-          title="Cerrar sesión"
-        >
-          <LogOut size={17} />
-        </button>
+       <button
+            type="button"
+            className="btn btn-ghost btn-icon sidebar-logout"
+            onClick={() => {
+              clearSession();
+              navigate(APP_ROUTES.login, { replace: true });
+            }}
+            title="Cerrar sesión"
+          >
+            <LogOut size={17} />
+          </button>
       </div>
     </aside>
   );
