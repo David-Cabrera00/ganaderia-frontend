@@ -2786,3 +2786,217 @@ body {
     min-height: auto;
   }
 }
+/* ─── Dashboard final interactive animations ─────────────────────────────── */
+
+/* KPI cards: hover + shine + glow */
+.dashboard-kpi-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.dashboard-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 135px;
+  height: 135px;
+  border-radius: 999px;
+  background: rgba(212, 177, 106, 0.13);
+  filter: blur(24px);
+  opacity: 0.7;
+  z-index: -1;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.dashboard-kpi-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      105deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.075) 50%,
+      transparent 78%
+    );
+  transform: translateX(-130%);
+  transition: transform 0.75s ease;
+}
+
+.dashboard-kpi-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(212, 177, 106, 0.36);
+  box-shadow:
+    0 26px 58px rgba(0, 0, 0, 0.36),
+    0 0 0 1px rgba(212, 177, 106, 0.08);
+}
+
+.dashboard-kpi-card:hover::before {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.dashboard-kpi-card:hover::after {
+  transform: translateX(130%);
+}
+
+.dashboard-kpi-card:hover .dashboard-kpi-icon {
+  transform: scale(1.06) rotate(-2deg);
+}
+
+.dashboard-kpi-icon {
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+/* KPI tone glows */
+.dashboard-kpi-card.danger::before {
+  background: rgba(239, 107, 99, 0.15);
+}
+
+.dashboard-kpi-card.warning::before {
+  background: rgba(229, 188, 97, 0.16);
+}
+
+.dashboard-kpi-card.success::before {
+  background: rgba(103, 192, 107, 0.14);
+}
+
+.dashboard-kpi-card.info::before {
+  background: rgba(91, 140, 255, 0.14);
+}
+
+/* Hero panel: more premium hover */
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.dashboard-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      105deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.055) 50%,
+      transparent 78%
+    );
+  transform: translateX(-130%);
+  transition: transform 0.85s ease;
+}
+
+.dashboard-hero:hover {
+  transform: translateY(-3px);
+  border-color: rgba(212, 177, 106, 0.30);
+  box-shadow:
+    0 28px 62px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(212, 177, 106, 0.06);
+}
+
+.dashboard-hero:hover::after {
+  transform: translateX(130%);
+}
+
+/* Hero mini cards */
+.dashboard-hero-mini-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dashboard-hero-mini-card::before {
+  content: '';
+  position: absolute;
+  top: -42px;
+  right: -42px;
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  background: rgba(212, 177, 106, 0.13);
+  filter: blur(22px);
+  z-index: -1;
+  opacity: 0.75;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.dashboard-hero-mini-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      105deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.07) 50%,
+      transparent 80%
+    );
+  transform: translateX(-130%);
+  transition: transform 0.75s ease;
+}
+
+.dashboard-hero-mini-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212, 177, 106, 0.34);
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.30),
+    0 0 0 1px rgba(212, 177, 106, 0.08);
+}
+
+.dashboard-hero-mini-card:hover::before {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.dashboard-hero-mini-card:hover::after {
+  transform: translateX(130%);
+}
+
+/* Hero pills */
+.dashboard-hero-pill {
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.dashboard-hero-pill:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 177, 106, 0.34);
+  background: rgba(212, 177, 106, 0.10);
+  color: var(--text-primary);
+}
+
+.dashboard-hero-pill:hover svg {
+  color: var(--accent);
+}
