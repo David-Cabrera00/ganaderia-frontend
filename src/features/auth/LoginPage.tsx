@@ -183,7 +183,7 @@ export function LoginPage() {
                 <code>admin@ganaderia.com</code>
               </div>
               <div>
-                <code>Admin12345</code>
+                <code>123ganadero456*</code>
               </div>
             </div>
 

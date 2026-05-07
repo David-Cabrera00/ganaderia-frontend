@@ -5,7 +5,7 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn('card', className)} {...props} />;
 }
 
-interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
+interface CardHeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title?: ReactNode;
   actions?: ReactNode;
 }

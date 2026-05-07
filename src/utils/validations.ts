@@ -22,6 +22,7 @@ export const collarSchema = z.object({
   notes: z.string().max(250, 'Máximo 250 caracteres').optional().or(z.literal('')),
   enabled: z.boolean().default(true),
 });
+
 export type CollarFormValues = z.infer<typeof collarSchema>;
 
 export const geofenceSchema = z.object({

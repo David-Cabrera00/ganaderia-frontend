@@ -1,24 +1,21 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../../stores/authStore';
+import { useAuthStore, isSessionValid } from '../../stores/authStore';
 
 interface AuthGuardProps {
   children: ReactNode;
 }
 
 export function AuthGuard({ children }: AuthGuardProps) {
-  const session = useAuthStore((state) => state.session);
-  const clearSession = useAuthStore((state) => state.clearSession);
+  const { isAuthenticated } = useAuthStore();
   const location = useLocation();
 
-  const isAuthenticated =
-    !!session?.token && Date.now() < session.expiresAt;
-
-  if (!isAuthenticated) {
-    if (session && Date.now() >= session.expiresAt) {
-      clearSession();
+  if (!isAuthenticated || !isSessionValid()) {
+    // Clear stale session if expired
+    if (isAuthenticated && !isSessionValid()) {
+      useAuthStore.getState().clearSession();
     }
-
+    // Save intended destination so we can redirect after login
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

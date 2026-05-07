@@ -49,7 +49,12 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <GuestOnlyRoute />,
-    children: [{ index: true, element: <LoginPage /> }],
+    children: [
+      {
+        index: true,
+        element: <LoginPage />,
+      },
+    ],
   },
   {
     element: <ProtectedRoute />,

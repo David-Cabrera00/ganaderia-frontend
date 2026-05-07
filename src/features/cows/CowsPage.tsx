@@ -482,9 +482,6 @@ export function CowsPage() {
                         setValueAs: (value) =>
                           sanitizeStrictInput(value ?? '', 30),
                       })}
-                      onKeyDown={(e) => {
-                        if (e.key === ' ') e.preventDefault();
-                      }}
                     />
                     {errors.internalCode ? (
                       <span className="form-error">

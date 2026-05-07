@@ -72,23 +72,20 @@ export interface CowRequest {
 
 // ─── Collar ──────────────────────────────────────────────────────────────────
 
-export interface CollarResponse {
-  id: number;
-  token: string;
+export interface CollarRequest {
   status: CollarStatus;
-  cowId: number | null;
-  cowToken: string | null;
-  cowName: string | null;
-  batteryLevel: number | null;
-  lastSeenAt: string | null;
-  signalStatus: DeviceSignalStatus | null;
-  firmwareVersion: string | null;
-  gpsAccuracy: number | null;
-  enabled: boolean;
-  notes: string | null;
+  cowId?: number;
+  batteryLevel?: number;
+  lastSeenAt?: string;
+  signalStatus?: DeviceSignalStatus;
+  firmwareVersion?: string;
+  gpsAccuracy?: number;
+  enabled?: boolean;
+  notes?: string;
 }
 
 export interface CollarRequest {
+  token: string;
   status: CollarStatus;
   cowId?: number;
   batteryLevel?: number;

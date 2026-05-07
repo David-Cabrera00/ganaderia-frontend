@@ -16,8 +16,6 @@ import { PageContainer } from '@/layouts/components/PageContainer';
 import { PageHeader } from '@/layouts/components/PageHeader';
 import { ReportMetricCard } from '@/features/reports/components/ReportMetricCard';
 import { Button } from '@/shared/components/ui/Button';
-import { Badge } from '@/shared/components/ui/Badge';
-import { EmptyState } from '@/shared/components/ui/EmptyState';
 import { Loader } from '@/shared/components/ui/Loader';
 import { Table } from '@/shared/components/ui/Table';
 import type {

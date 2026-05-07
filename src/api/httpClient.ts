@@ -1,10 +1,8 @@
 import axios, { AxiosError } from 'axios';
 
-
 const API_URL =
   import.meta.env.VITE_API_URL?.trim() || 'http://localhost:8080';
-  console.log('API_URL FRONTEND:', API_URL);
-  
+
 export class AppError extends Error {
   serverMessage: string;
   status?: number;
@@ -55,19 +53,36 @@ export const httpClient = axios.create({
 });
 
 httpClient.interceptors.request.use((config) => {
-  const raw = localStorage.getItem('ganaderia_session');
+  const authKeys = [
+    'auth-storage',
+    'ganaderia_local_session',
+    'ganaderia_session',
+    'user',
+  ];
 
-  if (raw) {
+  let token: string | null = null;
+
+  for (const key of authKeys) {
+    const raw = localStorage.getItem(key);
+    if (!raw) continue;
+
     try {
       const parsed = JSON.parse(raw);
-      const token = parsed?.state?.session?.token;
 
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+      token =
+        parsed?.state?.session?.token ||
+        parsed?.session?.token ||
+        parsed?.token ||
+        null;
+
+      if (token) break;
     } catch {
-      
+      continue;
     }
+  }
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;
