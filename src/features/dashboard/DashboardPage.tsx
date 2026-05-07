@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   AlertTriangle,
   Bell,
-  Beef,
   Clock,
   MapPin,
   Navigation,
@@ -41,6 +40,7 @@ import {
 import { DashboardMetricCard } from '@/features/dashboard/components/DashboardMetricCard';
 import { DashboardHealthCard } from '@/features/dashboard/components/DashboardHealthCard';
 import { DashboardOperationsMap } from '@/features/dashboard/components/DashboardOperationsMap';
+import { CattleIcon } from '@/shared/components/ui/CattleIcon';
 import {
   buildDashboardHealth,
   buildDashboardKpis,
@@ -53,7 +53,7 @@ const quickLinks = [
     title: 'Gestionar vacas',
     description: 'Consulta inventario, estado del hato y datos principales.',
     to: APP_ROUTES.cows,
-    icon: <Beef size={18} />,
+    icon: <CattleIcon width={18} height={18} />,
   },
   {
     title: 'Supervisar collares',
@@ -256,7 +256,7 @@ export function DashboardPage() {
 
         {summary ? (
           <section className="dashboard-kpi-grid">
-            <DashboardMetricCard icon={<Beef size={22} />} {...kpis[0]} />
+            <DashboardMetricCard icon={<CattleIcon width={22} height={22} />} {...kpis[0]} />
             <DashboardMetricCard icon={<MapPin size={22} />} {...kpis[1]} />
             <DashboardMetricCard icon={<Radio size={22} />} {...kpis[2]} />
             <DashboardMetricCard icon={<Bell size={22} />} {...kpis[3]} />
@@ -274,80 +274,32 @@ export function DashboardPage() {
 
         <DashboardOperationsMap locations={recentLocations} />
 
-        <section className="card map-shell">
-          <div className="card-header">
-            <span className="card-title">Módulos operativos</span>
+        <section className="card dashboard-modules-panel">
+          <div className="card-header dashboard-modules-header">
+            <div className="dashboard-modules-heading">
+              <span className="card-title">Módulos operativos</span>
+              <p className="dashboard-section-subtitle">
+                Accesos principales para supervisar la operación ganadera.
+              </p>
+            </div>
+
+            <Badge variant="blue">Panel operativo</Badge>
           </div>
 
           <div className="card-body">
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-                gap: 16,
-              }}
-            >
+            <div className="dashboard-modules-grid">
               {quickLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 14,
-                    padding: 18,
-                    border: '1px solid var(--border)',
-                    borderRadius: 18,
-                    background: 'var(--bg-surface)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 42,
-                      height: 42,
-                      borderRadius: 14,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'var(--accent-dim)',
-                      color: 'var(--accent)',
-                      flexShrink: 0,
-                    }}
-                  >
+                <Link key={link.to} to={link.to} className="dashboard-module-link">
+                  <div className="dashboard-module-shine" />
+
+                  <div className="dashboard-module-icon">
                     {link.icon}
                   </div>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 6,
-                    }}
-                  >
-                    <strong
-                      style={{ fontSize: '1rem', color: 'var(--text-primary)' }}
-                    >
-                      {link.title}
-                    </strong>
-                    <span
-                      style={{
-                        color: 'var(--text-secondary)',
-                        fontSize: '0.9rem',
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      {link.description}
-                    </span>
-                    <small
-                      style={{
-                        color: 'var(--accent)',
-                        fontSize: '0.82rem',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Abrir módulo →
-                    </small>
+                  <div className="dashboard-module-copy">
+                    <strong>{link.title}</strong>
+                    <p>{link.description}</p>
+                    <small>Abrir módulo →</small>
                   </div>
                 </Link>
               ))}
@@ -356,7 +308,7 @@ export function DashboardPage() {
         </section>
 
         <section className="dashboard-stack">
-          <section className="card">
+          <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Radar operativo</span>
               <Badge variant="blue">Resumen</Badge>
@@ -368,7 +320,7 @@ export function DashboardPage() {
             </div>
           </section>
 
-          <section className="card">
+          <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Prioridad inmediata</span>
               <Badge variant={watchItems.length > 0 ? 'yellow' : 'green'}>
@@ -376,217 +328,67 @@ export function DashboardPage() {
               </Badge>
             </div>
 
-            <div className="card-body" style={{ paddingTop: 16 }}>
+            <div className="card-body">
               {watchItems.length === 0 ? (
                 <EmptyState
                   title="Sin frentes urgentes"
                   description="El monitoreo no muestra frentes urgentes para este turno."
                 />
               ) : (
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-                    gap: 14,
-                  }}
-                >
-                  {watchItems.map((item) => {
-                    const tone =
-                      item.tone === 'danger'
-                        ? {
-                            border: '1px solid rgba(239, 107, 99, 0.22)',
-                            background: 'rgba(239, 107, 99, 0.06)',
-                            dot: 'var(--red)',
-                          }
-                        : item.tone === 'warning'
-                        ? {
-                            border: '1px solid rgba(214, 179, 106, 0.22)',
-                            background: 'rgba(214, 179, 106, 0.06)',
-                            dot: 'var(--accent)',
-                          }
-                        : {
-                            border: '1px solid rgba(91, 140, 255, 0.18)',
-                            background: 'rgba(91, 140, 255, 0.05)',
-                            dot: 'var(--blue)',
-                          };
+                <div className="dashboard-insight-grid">
+                  {watchItems.map((item) => (
+                    <article
+                      key={item.id}
+                      className={`dashboard-insight-card ${item.tone}`}
+                    >
+                      <div className="dashboard-insight-heading">
+                        <span className="dashboard-insight-dot" />
+                        <strong>{item.title}</strong>
+                      </div>
 
-                    return (
-                      <article
-                        key={item.id}
-                        style={{
-                          border: tone.border,
-                          background: tone.background,
-                          borderRadius: 16,
-                          padding: 14,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 8,
-                          minHeight: 120,
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 10,
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: 12,
-                              height: 12,
-                              borderRadius: 999,
-                              background: tone.dot,
-                              flexShrink: 0,
-                            }}
-                          />
-                          <strong
-                            style={{
-                              fontSize: '1rem',
-                              color: 'var(--text-primary)',
-                            }}
-                          >
-                            {item.title}
-                          </strong>
-                        </div>
-
-                        <span
-                          style={{
-                            display: 'block',
-                            color: 'var(--text-secondary)',
-                            fontSize: '0.9rem',
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          {item.subtitle}
-                        </span>
-
-                        <small
-                          style={{
-                            display: 'block',
-                            color: 'var(--text-muted)',
-                            fontSize: '0.78rem',
-                          }}
-                        >
-                          {item.meta}
-                        </small>
-                      </article>
-                    );
-                  })}
+                      <span>{item.subtitle}</span>
+                      <small>{item.meta}</small>
+                    </article>
+                  ))}
                 </div>
               )}
             </div>
           </section>
 
-          <section className="card">
+          <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Actividad de ubicación</span>
               <Badge variant="blue">{locationFeed.length}</Badge>
             </div>
 
-            <div className="card-body" style={{ paddingTop: 16 }}>
+            <div className="card-body">
               {locationFeed.length === 0 ? (
                 <EmptyState
                   title="Sin lecturas recientes"
                   description="Aún no hay ubicaciones disponibles para mostrar en el panel."
                 />
               ) : (
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-                    gap: 14,
-                  }}
-                >
-                  {locationFeed.map((item) => {
-                    const tone =
-                      item.tone === 'danger'
-                        ? {
-                            border: '1px solid rgba(239, 107, 99, 0.22)',
-                            background: 'rgba(239, 107, 99, 0.06)',
-                            dot: 'var(--red)',
-                          }
-                        : item.tone === 'warning'
-                        ? {
-                            border: '1px solid rgba(214, 179, 106, 0.22)',
-                            background: 'rgba(214, 179, 106, 0.06)',
-                            dot: 'var(--accent)',
-                          }
-                        : {
-                            border: '1px solid rgba(91, 140, 255, 0.18)',
-                            background: 'rgba(91, 140, 255, 0.05)',
-                            dot: 'var(--blue)',
-                          };
+                <div className="dashboard-insight-grid">
+                  {locationFeed.map((item) => (
+                    <article
+                      key={item.id}
+                      className={`dashboard-insight-card ${item.tone}`}
+                    >
+                      <div className="dashboard-insight-heading">
+                        <span className="dashboard-insight-dot" />
+                        <strong>{item.title}</strong>
+                      </div>
 
-                    return (
-                      <article
-                        key={item.id}
-                        style={{
-                          border: tone.border,
-                          background: tone.background,
-                          borderRadius: 16,
-                          padding: 14,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 8,
-                          minHeight: 120,
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 10,
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: 12,
-                              height: 12,
-                              borderRadius: 999,
-                              background: tone.dot,
-                              flexShrink: 0,
-                            }}
-                          />
-                          <strong
-                            style={{
-                              fontSize: '1rem',
-                              color: 'var(--text-primary)',
-                            }}
-                          >
-                            {item.title}
-                          </strong>
-                        </div>
-
-                        <span
-                          style={{
-                            display: 'block',
-                            color: 'var(--text-secondary)',
-                            fontSize: '0.9rem',
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          {item.subtitle}
-                        </span>
-
-                        <small
-                          style={{
-                            display: 'block',
-                            color: 'var(--text-muted)',
-                            fontSize: '0.78rem',
-                          }}
-                        >
-                          {item.meta}
-                        </small>
-                      </article>
-                    );
-                  })}
+                      <span>{item.subtitle}</span>
+                      <small>{item.meta}</small>
+                    </article>
+                  ))}
                 </div>
               )}
             </div>
           </section>
 
-          <section className="card">
+          <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Alertas críticas recientes</span>
               <Badge variant={criticalAlerts.length > 0 ? 'red' : 'green'}>
@@ -605,7 +407,7 @@ export function DashboardPage() {
         </section>
 
         <section className="dashboard-secondary-grid">
-          <section className="card">
+          <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Vacas fuera de geocerca</span>
               <Badge variant={cowsOutside.length > 0 ? 'red' : 'green'}>
@@ -636,7 +438,7 @@ export function DashboardPage() {
             </div>
           </section>
 
-          <section className="card">
+          <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Collares sin señal o mantenimiento</span>
               <Badge variant={offlineCollars.length > 0 ? 'yellow' : 'green'}>
@@ -662,9 +464,7 @@ export function DashboardPage() {
                             : 'Sin última señal'}
                         </span>
                       </div>
-                      <span
-                        className={`badge ${COLLAR_STATUS_COLORS[collar.status]}`}
-                      >
+                      <span className={`badge ${COLLAR_STATUS_COLORS[collar.status]}`}>
                         {COLLAR_STATUS_LABELS[collar.status]}
                       </span>
                     </article>
