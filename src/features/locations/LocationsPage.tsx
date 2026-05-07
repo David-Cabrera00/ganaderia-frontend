@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback, type ChangeEvent, type ReactNode } from 'react';
 import {
   AlertCircle,
-  Crosshair,
   MapPin,
   Navigation,
   Radar,
