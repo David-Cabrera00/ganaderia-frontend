@@ -215,24 +215,22 @@ export function CollarsPage() {
     setServerError(null);
 
     try {
-     const payload = {
-          status: values.status,
-          cowId: values.cowId ?? undefined,
-          batteryLevel: values.batteryLevel ?? undefined,
-          firmwareVersion: values.firmwareVersion
-            ? sanitizeStrictInput(values.firmwareVersion, 30)
-            : undefined,
-          notes: values.notes ? sanitizeTextInput(values.notes, 250) : undefined,
-          enabled: values.enabled ?? true,
-        } as Parameters<typeof CollarService.create>[0];
+      const payload = {
+        status: values.status,
+        cowId: values.cowId ?? undefined,
+        batteryLevel: values.batteryLevel,
+        firmwareVersion: sanitizeStrictInput(values.firmwareVersion, 30),
+        notes: values.notes ? sanitizeTextInput(values.notes, 250) : undefined,
+        enabled: values.enabled ?? true,
+      } as Parameters<typeof CollarService.create>[0];
 
-        if (editing) {
-          await CollarService.update(editing.id, payload);
-          toast.success('Collar actualizado correctamente');
-        } else {
-          await CollarService.create(payload);
-          toast.success('Collar registrado correctamente');
-        }
+      if (editing) {
+        await CollarService.update(editing.id, payload);
+        toast.success('Collar actualizado correctamente');
+      } else {
+        await CollarService.create(payload);
+        toast.success('Collar registrado correctamente');
+      }
 
       setModalOpen(false);
       void loadData();
@@ -242,12 +240,15 @@ export function CollarsPage() {
   };
 
   const activeCount = collars.filter((item) => item.status === 'ACTIVO').length;
+
   const maintenanceCount = collars.filter(
     (item) => item.status === 'MANTENIMIENTO',
   ).length;
+
   const offlineCount = collars.filter(
     (item) => item.signalStatus === 'SIN_SENAL' || !item.enabled,
   ).length;
+
   const lowBatteryCount = collars.filter(
     (item) =>
       item.batteryLevel !== null &&
@@ -390,8 +391,8 @@ export function CollarsPage() {
                 placeholder="Buscar por token, vaca o firmware..."
                 value={search}
                 maxLength={60}
-                onChange={(e) =>
-                  setSearch(sanitizeSearchInput(e.target.value, 60))
+                onChange={(event) =>
+                  setSearch(sanitizeSearchInput(event.target.value, 60))
                 }
               />
             </div>
@@ -627,8 +628,8 @@ export function CollarsPage() {
                             <td>
                               <button
                                 className="btn btn-ghost btn-icon btn-sm collars-edit-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation();
+                                onClick={(event) => {
+                                  event.stopPropagation();
                                   openEdit(collar);
                                 }}
                                 title="Editar collar"
@@ -651,8 +652,8 @@ export function CollarsPage() {
       {modalOpen ? (
         <div
           className="modal-backdrop collars-premium-modal-backdrop"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setModalOpen(false);
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setModalOpen(false);
           }}
         >
           <div className="modal collars-premium-modal">
@@ -750,7 +751,7 @@ export function CollarsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Nivel de batería (%)</label>
+                    <label className="form-label">Nivel de batería (%) *</label>
                     <input
                       type="number"
                       min={0}
@@ -774,9 +775,11 @@ export function CollarsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Firmware</label>
+                    <label className="form-label">Firmware *</label>
                     <input
-                      className="form-input"
+                      className={`form-input ${
+                        errors.firmwareVersion ? 'error' : ''
+                      }`}
                       placeholder="ej. v1.2.3"
                       maxLength={30}
                       {...register('firmwareVersion', {
@@ -784,6 +787,13 @@ export function CollarsPage() {
                           sanitizeStrictInput(value ?? '', 30),
                       })}
                     />
+
+                    {errors.firmwareVersion ? (
+                      <span className="form-error">
+                        <AlertCircle size={11} />
+                        {errors.firmwareVersion.message}
+                      </span>
+                    ) : null}
                   </div>
 
                   <div className="form-group" style={{ alignSelf: 'end' }}>
