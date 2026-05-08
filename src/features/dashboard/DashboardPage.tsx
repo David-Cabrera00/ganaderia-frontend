@@ -75,6 +75,34 @@ const quickLinks = [
   },
 ] as const;
 
+function normalizeDisplayText(value: string | number | null | undefined) {
+  if (value === null || value === undefined) return '';
+
+  return String(value)
+    .replaceAll('Ã¡', 'á')
+    .replaceAll('Ã©', 'é')
+    .replaceAll('Ã­', 'í')
+    .replaceAll('Ã³', 'ó')
+    .replaceAll('Ãº', 'ú')
+    .replaceAll('Ã±', 'ñ')
+    .replaceAll('Ã', 'Á')
+    .replaceAll('Ã‰', 'É')
+    .replaceAll('Ã', 'Í')
+    .replaceAll('Ã“', 'Ó')
+    .replaceAll('Ãš', 'Ú')
+    .replaceAll('Ã‘', 'Ñ')
+    .replaceAll('Â¿', '¿')
+    .replaceAll('Â¡', '¡')
+    .replaceAll('Â°', '°')
+    .replaceAll('Â·', '·')
+    .replaceAll('â€“', '–')
+    .replaceAll('â€”', '—')
+    .replaceAll('â€œ', '“')
+    .replaceAll('â€', '”')
+    .replaceAll('â€˜', '‘')
+    .replaceAll('â€™', '’');
+}
+
 export function DashboardPage() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [criticalAlerts, setCriticalAlerts] = useState<AlertResponse[]>([]);
@@ -121,14 +149,17 @@ export function DashboardPage() {
   }, [load]);
 
   const kpis = useMemo(() => buildDashboardKpis(summary), [summary]);
+
   const healthItems = useMemo(
     () => buildDashboardHealth(summary, offlineCollars, cowsOutside),
     [summary, offlineCollars, cowsOutside],
   );
+
   const watchItems = useMemo(
     () => buildWatchList(criticalAlerts, offlineCollars, cowsOutside),
     [criticalAlerts, offlineCollars, cowsOutside],
   );
+
   const locationFeed = useMemo(
     () => buildRecentLocationFeed(recentLocations),
     [recentLocations],
@@ -144,7 +175,8 @@ export function DashboardPage() {
       {
         key: 'cow',
         header: 'Vaca',
-        render: (alert) => alert.cowName ?? 'Sin vaca asociada',
+        render: (alert) =>
+          normalizeDisplayText(alert.cowName ?? 'Sin vaca asociada'),
       },
       {
         key: 'status',
@@ -173,6 +205,7 @@ export function DashboardPage() {
           title="Centro de control"
           subtitle="Cargando indicadores operativos del sistema."
         />
+
         <PageContainer>
           <div className="loading-center">
             <div className="loading-spinner" />
@@ -230,9 +263,11 @@ export function DashboardPage() {
               <span className="dashboard-hero-pill">
                 <ShieldCheck size={14} /> Operación monitoreada
               </span>
+
               <span className="dashboard-hero-pill">
                 <Navigation size={14} /> Trazabilidad y geocercas
               </span>
+
               <span className="dashboard-hero-pill">
                 <Clock size={14} /> Respuesta operativa
               </span>
@@ -256,9 +291,15 @@ export function DashboardPage() {
 
         {summary ? (
           <section className="dashboard-kpi-grid">
-            <DashboardMetricCard icon={<CattleIcon width={22} height={22} />} {...kpis[0]} />
+            <DashboardMetricCard
+              icon={<CattleIcon width={22} height={22} />}
+              {...kpis[0]}
+            />
+
             <DashboardMetricCard icon={<MapPin size={22} />} {...kpis[1]} />
+
             <DashboardMetricCard icon={<Radio size={22} />} {...kpis[2]} />
+
             <DashboardMetricCard icon={<Bell size={22} />} {...kpis[3]} />
           </section>
         ) : (
@@ -278,6 +319,7 @@ export function DashboardPage() {
           <div className="card-header dashboard-modules-header">
             <div className="dashboard-modules-heading">
               <span className="card-title">Módulos operativos</span>
+
               <p className="dashboard-section-subtitle">
                 Accesos principales para supervisar la operación ganadera.
               </p>
@@ -289,12 +331,14 @@ export function DashboardPage() {
           <div className="card-body">
             <div className="dashboard-modules-grid">
               {quickLinks.map((link) => (
-                <Link key={link.to} to={link.to} className="dashboard-module-link">
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="dashboard-module-link"
+                >
                   <div className="dashboard-module-shine" />
 
-                  <div className="dashboard-module-icon">
-                    {link.icon}
-                  </div>
+                  <div className="dashboard-module-icon">{link.icon}</div>
 
                   <div className="dashboard-module-copy">
                     <strong>{link.title}</strong>
@@ -313,6 +357,7 @@ export function DashboardPage() {
               <span className="card-title">Radar operativo</span>
               <Badge variant="blue">Resumen</Badge>
             </div>
+
             <div className="card-body dashboard-health-grid">
               {healthItems.map((item) => (
                 <DashboardHealthCard key={item.title} item={item} />
@@ -323,6 +368,7 @@ export function DashboardPage() {
           <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Prioridad inmediata</span>
+
               <Badge variant={watchItems.length > 0 ? 'yellow' : 'green'}>
                 {watchItems.length}
               </Badge>
@@ -343,11 +389,13 @@ export function DashboardPage() {
                     >
                       <div className="dashboard-insight-heading">
                         <span className="dashboard-insight-dot" />
-                        <strong>{item.title}</strong>
+
+                        <strong>{normalizeDisplayText(item.title)}</strong>
                       </div>
 
-                      <span>{item.subtitle}</span>
-                      <small>{item.meta}</small>
+                      <span>{normalizeDisplayText(item.subtitle)}</span>
+
+                      <small>{normalizeDisplayText(item.meta)}</small>
                     </article>
                   ))}
                 </div>
@@ -358,6 +406,7 @@ export function DashboardPage() {
           <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Actividad de ubicación</span>
+
               <Badge variant="blue">{locationFeed.length}</Badge>
             </div>
 
@@ -376,11 +425,13 @@ export function DashboardPage() {
                     >
                       <div className="dashboard-insight-heading">
                         <span className="dashboard-insight-dot" />
-                        <strong>{item.title}</strong>
+
+                        <strong>{normalizeDisplayText(item.title)}</strong>
                       </div>
 
-                      <span>{item.subtitle}</span>
-                      <small>{item.meta}</small>
+                      <span>{normalizeDisplayText(item.subtitle)}</span>
+
+                      <small>{normalizeDisplayText(item.meta)}</small>
                     </article>
                   ))}
                 </div>
@@ -391,10 +442,12 @@ export function DashboardPage() {
           <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Alertas críticas recientes</span>
+
               <Badge variant={criticalAlerts.length > 0 ? 'red' : 'green'}>
                 {criticalAlerts.length}
               </Badge>
             </div>
+
             <div className="card-body">
               <Table
                 columns={alertColumns}
@@ -410,10 +463,12 @@ export function DashboardPage() {
           <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Vacas fuera de geocerca</span>
+
               <Badge variant={cowsOutside.length > 0 ? 'red' : 'green'}>
                 {cowsOutside.length}
               </Badge>
             </div>
+
             <div className="card-body">
               {cowsOutside.length === 0 ? (
                 <EmptyState
@@ -425,9 +480,11 @@ export function DashboardPage() {
                   {cowsOutside.map((cow) => (
                     <article key={cow.id} className="dashboard-entity-item">
                       <div>
-                        <strong>{cow.name}</strong>
-                        <span>{cow.token}</span>
+                        <strong>{normalizeDisplayText(cow.name)}</strong>
+
+                        <span>{normalizeDisplayText(cow.token)}</span>
                       </div>
+
                       <span className={`badge ${COW_STATUS_COLORS[cow.status]}`}>
                         {COW_STATUS_LABELS[cow.status]}
                       </span>
@@ -441,10 +498,12 @@ export function DashboardPage() {
           <section className="card dashboard-premium-panel">
             <div className="card-header">
               <span className="card-title">Collares sin señal o mantenimiento</span>
+
               <Badge variant={offlineCollars.length > 0 ? 'yellow' : 'green'}>
                 {offlineCollars.length}
               </Badge>
             </div>
+
             <div className="card-body">
               {offlineCollars.length === 0 ? (
                 <EmptyState
@@ -456,15 +515,22 @@ export function DashboardPage() {
                   {offlineCollars.map((collar) => (
                     <article key={collar.id} className="dashboard-entity-item">
                       <div>
-                        <strong>{collar.token}</strong>
+                        <strong>{normalizeDisplayText(collar.token)}</strong>
+
                         <span>
-                          {collar.cowName ?? 'Sin asignación'} ·{' '}
+                          {normalizeDisplayText(
+                            collar.cowName ?? 'Sin asignación',
+                          )}{' '}
+                          ·{' '}
                           {collar.lastSeenAt
                             ? formatDateTime(collar.lastSeenAt)
                             : 'Sin última señal'}
                         </span>
                       </div>
-                      <span className={`badge ${COLLAR_STATUS_COLORS[collar.status]}`}>
+
+                      <span
+                        className={`badge ${COLLAR_STATUS_COLORS[collar.status]}`}
+                      >
                         {COLLAR_STATUS_LABELS[collar.status]}
                       </span>
                     </article>
