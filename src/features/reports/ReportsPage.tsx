@@ -268,7 +268,14 @@ export function ReportsPage() {
         subtitle="Vista consolidada para seguimiento ejecutivo, hallazgos operativos y base de análisis inteligente."
         badge="Análisis ejecutivo"
         actions={
-          <Button type="button" variant="secondary" size="sm">
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() =>
+              window.alert('La exportación de reportes estará disponible próximamente.')
+            }
+          >
             <Download size={14} />
             Exportación futura
           </Button>
