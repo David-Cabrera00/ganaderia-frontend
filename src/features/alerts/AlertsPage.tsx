@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from "react";
 import {
   AlertCircle,
   Bell,
@@ -12,23 +12,23 @@ import {
   Sparkles,
   X,
   XCircle,
-} from 'lucide-react';
-import toast from 'react-hot-toast';
-import { AlertService } from '@/api/services';
-import { AppError } from '@/api/httpClient';
-import { useAuthStore } from '@/stores/authStore';
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { AlertService } from "@/api/services";
+import { AppError } from "@/api/httpClient";
+import { useAuthStore } from "@/stores/authStore";
 import {
   ALERT_TYPE_LABELS,
   ALERT_STATUS_COLORS,
   ALERT_STATUS_LABELS,
   formatDateTime,
-} from '@/utils/helpers';
-import type { AlertResponse, AlertStatus, AlertType } from '@/types';
-import { PageContainer } from '@/layouts/components/PageContainer';
-import { PageHeader } from '@/layouts/components/PageHeader';
-import { Button } from '@/shared/components/ui/Button';
+} from "@/utils/helpers";
+import type { AlertResponse, AlertStatus, AlertType } from "@/types";
+import { PageContainer } from "@/layouts/components/PageContainer";
+import { PageHeader } from "@/layouts/components/PageHeader";
+import { Button } from "@/shared/components/ui/Button";
 
-type AlertMetricTone = 'default' | 'success' | 'warning' | 'danger' | 'info';
+type AlertMetricTone = "default" | "success" | "warning" | "danger" | "info";
 
 interface AlertMetricItem {
   label: string;
@@ -39,53 +39,46 @@ interface AlertMetricItem {
 }
 
 const PAGE_SIZE = 20;
-  function normalizeDisplayText(value: string | null | undefined) {
-    if (!value) return '';
+function normalizeDisplayText(value: string | null | undefined) {
+  if (!value) return "";
 
-    return value
-    .replaceAll('Ã¡', 'á')
-    .replaceAll('Ã©', 'é')
-    .replaceAll('Ã­', 'í')
-    .replaceAll('Ã³', 'ó')
-    .replaceAll('Ãº', 'ú')
-    .replaceAll('Ã±', 'ñ')
-    .replaceAll('Ã', 'Á')
-    .replaceAll('Ã‰', 'É')
-    .replaceAll('Ã', 'Í')
-    .replaceAll('Ã“', 'Ó')
-    .replaceAll('Ãš', 'Ú')
-    .replaceAll('Ã‘', 'Ñ')
-    .replaceAll('Â¿', '¿')
-    .replaceAll('Â¡', '¡')
-    .replaceAll('Â°', '°');
+  return value
+    .replaceAll("Ã¡", "á")
+    .replaceAll("Ã©", "é")
+    .replaceAll("Ã­", "í")
+    .replaceAll("Ã³", "ó")
+    .replaceAll("Ãº", "ú")
+    .replaceAll("Ã±", "ñ")
+    .replaceAll("Ã", "Á")
+    .replaceAll("Ã‰", "É")
+    .replaceAll("Ã", "Í")
+    .replaceAll("Ã“", "Ó")
+    .replaceAll("Ãš", "Ú")
+    .replaceAll("Ã‘", "Ñ")
+    .replaceAll("Â¿", "¿")
+    .replaceAll("Â¡", "¡")
+    .replaceAll("Â°", "°");
 }
 
 const alertToneLabel: Record<AlertMetricTone, string> = {
-  default: 'Operativo',
-  success: 'Estable',
-  warning: 'Seguimiento',
-  danger: 'Atención',
-  info: 'Monitoreo',
+  default: "Operativo",
+  success: "Estable",
+  warning: "Seguimiento",
+  danger: "Atención",
+  info: "Monitoreo",
 };
 
-function getTypeIcon(type: AlertType) {
-  if (type === 'EXIT_GEOFENCE') return <MapPinned size={15} />;
-  if (type === 'COLLAR_OFFLINE') return <Radio size={15} />;
-  if (type === 'LOW_BATTERY') return <Bell size={15} />;
-  return <Bell size={15} />;
-}
-
 function getStatusPremiumClass(status: AlertStatus) {
-  if (status === 'PENDIENTE') return 'alerts-status-pending';
-  if (status === 'RESUELTA') return 'alerts-status-resolved';
-  return 'alerts-status-discarded';
+  if (status === "PENDIENTE") return "alerts-status-pending";
+  if (status === "RESUELTA") return "alerts-status-resolved";
+  return "alerts-status-discarded";
 }
 
 function getTypePremiumClass(type: AlertType) {
-  if (type === 'EXIT_GEOFENCE') return 'alerts-type-geofence';
-  if (type === 'COLLAR_OFFLINE') return 'alerts-type-collar';
-  if (type === 'LOW_BATTERY') return 'alerts-type-default';
-  return 'alerts-type-default';
+  if (type === "EXIT_GEOFENCE") return "alerts-type-geofence";
+  if (type === "COLLAR_OFFLINE") return "alerts-type-collar";
+  if (type === "LOW_BATTERY") return "alerts-type-default";
+  return "alerts-type-default";
 }
 
 export function AlertsPage() {
@@ -95,17 +88,17 @@ export function AlertsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<AlertStatus | ''>('');
-  const [typeFilter, setTypeFilter] = useState<AlertType | ''>('');
+  const [statusFilter, setStatusFilter] = useState<AlertStatus | "">("");
+  const [typeFilter, setTypeFilter] = useState<AlertType | "">("");
   const [resolveModal, setResolveModal] = useState<{
     alert: AlertResponse;
-    action: 'resolve' | 'discard';
+    action: "resolve" | "discard";
   } | null>(null);
-  const [observations, setObservations] = useState('');
+  const [observations, setObservations] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const { hasAnyRole } = useAuthStore();
-  const canManage = hasAnyRole(['ADMINISTRADOR']);
+  const canManage = hasAnyRole(["ADMINISTRADOR"]);
 
   const load = useCallback(
     async (isRefresh = false) => {
@@ -146,16 +139,22 @@ export function AlertsPage() {
     setSubmitting(true);
 
     try {
-      if (resolveModal.action === 'resolve') {
-        await AlertService.resolve(resolveModal.alert.id, observations || undefined);
-        toast.success('Alerta resuelta');
+      if (resolveModal.action === "resolve") {
+        await AlertService.resolve(
+          resolveModal.alert.id,
+          observations || undefined,
+        );
+        toast.success("Alerta resuelta");
       } else {
-        await AlertService.discard(resolveModal.alert.id, observations || undefined);
-        toast.success('Alerta descartada');
+        await AlertService.discard(
+          resolveModal.alert.id,
+          observations || undefined,
+        );
+        toast.success("Alerta descartada");
       }
 
       setResolveModal(null);
-      setObservations('');
+      setObservations("");
       void load(true);
     } catch (err) {
       toast.error(AppError.from(err).serverMessage);
@@ -165,47 +164,57 @@ export function AlertsPage() {
   };
 
   const clearFilters = () => {
-    setStatusFilter('');
-    setTypeFilter('');
+    setStatusFilter("");
+    setTypeFilter("");
     setPage(0);
   };
 
-  const pendingCount = alerts.filter((alert) => alert.status === 'PENDIENTE').length;
-  const resolvedCount = alerts.filter((alert) => alert.status === 'RESUELTA').length;
-  const discardedCount = alerts.filter((alert) => alert.status === 'DESCARTADA').length;
-  const geofenceCount = alerts.filter((alert) => alert.type === 'EXIT_GEOFENCE').length;
-  const collarCount = alerts.filter((alert) => alert.type === 'COLLAR_OFFLINE').length;
+  const pendingCount = alerts.filter(
+    (alert) => alert.status === "PENDIENTE",
+  ).length;
+  const resolvedCount = alerts.filter(
+    (alert) => alert.status === "RESUELTA",
+  ).length;
+  const discardedCount = alerts.filter(
+    (alert) => alert.status === "DESCARTADA",
+  ).length;
+  const geofenceCount = alerts.filter(
+    (alert) => alert.type === "EXIT_GEOFENCE",
+  ).length;
+  const collarCount = alerts.filter(
+    (alert) => alert.type === "COLLAR_OFFLINE",
+  ).length;
   const hasFilters = Boolean(statusFilter || typeFilter);
   const metrics: AlertMetricItem[] = [
     {
-      label: 'Registros visibles',
+      label: "Registros visibles",
       value: alerts.length,
-      helper: 'Alertas cargadas con los filtros actuales.',
-      tone: 'info',
+      helper: "Alertas cargadas con los filtros actuales.",
+      tone: "info",
       icon: <Bell size={24} />,
     },
     {
-      label: 'Pendientes',
+      label: "Pendientes",
       value: pendingCount,
       helper:
         pendingCount > 0
-          ? 'Eventos que requieren atención operativa.'
-          : 'Sin alertas pendientes en esta página.',
-      tone: pendingCount > 0 ? 'danger' : 'success',
+          ? "Eventos que requieren atención operativa."
+          : "Sin alertas pendientes en esta página.",
+      tone: pendingCount > 0 ? "danger" : "success",
       icon: <AlertCircle size={24} />,
     },
     {
-      label: 'Resueltas',
+      label: "Resueltas",
       value: resolvedCount,
-      helper: 'Casos cerrados correctamente en el corte actual.',
-      tone: 'success',
+      helper: "Casos cerrados correctamente en el corte actual.",
+      tone: "success",
       icon: <CheckCircle size={24} />,
     },
     {
-      label: 'Descartadas',
+      label: "Descartadas",
       value: discardedCount,
-      helper: 'Eventos cerrados sin acción correctiva.',
-      tone: 'warning',
+      helper: "Eventos cerrados sin acción correctiva.",
+      tone: "warning",
       icon: <XCircle size={24} />,
     },
   ];
@@ -225,7 +234,7 @@ export function AlertsPage() {
             onClick={() => void load(true)}
             disabled={refreshing}
           >
-            <RefreshCw size={14} className={refreshing ? 'spin-icon' : ''} />
+            <RefreshCw size={14} className={refreshing ? "spin-icon" : ""} />
             Actualizar
           </Button>
         }
@@ -242,8 +251,9 @@ export function AlertsPage() {
             <h2>Gestión visual de incidentes del hato y dispositivos GPS</h2>
 
             <p>
-              Supervisa salidas de geocerca, collares sin señal y eventos pendientes
-              con una vista ejecutiva orientada a la toma de decisiones.
+              Supervisa salidas de geocerca, collares sin señal y eventos
+              pendientes con una vista ejecutiva orientada a la toma de
+              decisiones.
             </p>
 
             <div className="alerts-premium-hero-pills">
@@ -312,7 +322,7 @@ export function AlertsPage() {
                 className="form-select alerts-premium-select"
                 value={statusFilter}
                 onChange={(e) => {
-                  setStatusFilter(e.target.value as AlertStatus | '');
+                  setStatusFilter(e.target.value as AlertStatus | "");
                   setPage(0);
                 }}
               >
@@ -326,7 +336,7 @@ export function AlertsPage() {
                 className="form-select alerts-premium-select"
                 value={typeFilter}
                 onChange={(e) => {
-                  setTypeFilter(e.target.value as AlertType | '');
+                  setTypeFilter(e.target.value as AlertType | "");
                   setPage(0);
                 }}
               >
@@ -364,7 +374,8 @@ export function AlertsPage() {
                 <div>
                   <span className="card-title">Detalle de alertas</span>
                   <p className="alerts-premium-section-subtitle">
-                    Seguimiento de eventos, animales asociados, estado y acciones disponibles.
+                    Seguimiento de eventos, animales asociados, estado y
+                    acciones disponibles.
                   </p>
                 </div>
 
@@ -378,14 +389,18 @@ export function AlertsPage() {
                   <table>
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>Tipo</th>
-                        <th>Mensaje</th>
-                        <th>Vaca</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                        <th>Observaciones</th>
-                        {canManage ? <th style={{ width: 120 }}>Acciones</th> : null}
+                        <th className="alerts-col-id">ID</th>
+                        <th className="alerts-col-type">Tipo</th>
+                        <th className="alerts-col-message">Mensaje</th>
+                        <th className="alerts-col-cow">Vaca</th>
+                        <th className="alerts-col-status">Estado</th>
+                        <th className="alerts-col-date">Fecha</th>
+                        <th className="alerts-col-observations">
+                          Observaciones
+                        </th>
+                        {canManage ? (
+                          <th className="alerts-col-actions">Acciones</th>
+                        ) : null}
                       </tr>
                     </thead>
 
@@ -396,7 +411,8 @@ export function AlertsPage() {
                             <div className="empty-state">
                               <Bell size={32} className="empty-state-icon" />
                               <span className="empty-state-text">
-                                No se encontraron alertas para los filtros seleccionados.
+                                No se encontraron alertas para los filtros
+                                seleccionados.
                               </span>
                             </div>
                           </td>
@@ -404,33 +420,38 @@ export function AlertsPage() {
                       ) : (
                         alerts.map((alert) => (
                           <tr key={alert.id}>
-                            <td className="td-mono">#{alert.id}</td>
+                            <td className="td-mono alerts-id-cell">
+                              #{alert.id}
+                            </td>
 
-                            <td>
+                            <td className="alerts-type-cell">
                               <span
                                 className={`alerts-type-chip ${getTypePremiumClass(
                                   alert.type,
                                 )}`}
                               >
-                                {getTypeIcon(alert.type)}
                                 {ALERT_TYPE_LABELS[alert.type]}
                               </span>
                             </td>
 
-                            <td>
+                            <td className="alerts-message-column">
                               <div className="alerts-message-cell">
-                                <strong>{normalizeDisplayText(alert.message)}</strong>
-                                <span>Evento operativo registrado por el sistema.</span>
+                                <strong>
+                                  {normalizeDisplayText(alert.message)}
+                                </strong>
+                                <span>
+                                  Evento operativo registrado por el sistema.
+                                </span>
                               </div>
                             </td>
 
-                            <td>
+                            <td className="alerts-cow-cell">
                               <span className="alerts-cow-chip">
-                                {alert.cowName ?? 'Sin vaca asociada'}
+                                {alert.cowName ?? "Sin vaca asociada"}
                               </span>
                             </td>
 
-                            <td>
+                            <td className="alerts-status-cell">
                               <span
                                 className={`badge ${ALERT_STATUS_COLORS[alert.status]} alerts-status-chip ${getStatusPremiumClass(
                                   alert.status,
@@ -440,24 +461,30 @@ export function AlertsPage() {
                               </span>
                             </td>
 
-                            <td className="td-mono">{formatDateTime(alert.createdAt)}</td>
+                            <td className="td-mono alerts-date-cell">
+                              {formatDateTime(alert.createdAt)}
+                            </td>
 
-                            <td>
+                            <td className="alerts-observations-cell">
                               <span className="alerts-observation-text">
-                               {normalizeDisplayText(alert.observations) || '—'}
+                                {normalizeDisplayText(alert.observations) ||
+                                  "—"}
                               </span>
                             </td>
 
                             {canManage ? (
-                              <td>
-                                {alert.status === 'PENDIENTE' ? (
+                              <td className="alerts-actions-column">
+                                {alert.status === "PENDIENTE" ? (
                                   <div className="alerts-actions-cell">
                                     <button
                                       type="button"
                                       className="btn btn-success btn-icon btn-sm alerts-action-btn"
                                       onClick={() => {
-                                        setResolveModal({ alert, action: 'resolve' });
-                                        setObservations('');
+                                        setResolveModal({
+                                          alert,
+                                          action: "resolve",
+                                        });
+                                        setObservations("");
                                       }}
                                       title="Resolver"
                                     >
@@ -468,8 +495,11 @@ export function AlertsPage() {
                                       type="button"
                                       className="btn btn-danger btn-icon btn-sm alerts-action-btn"
                                       onClick={() => {
-                                        setResolveModal({ alert, action: 'discard' });
-                                        setObservations('');
+                                        setResolveModal({
+                                          alert,
+                                          action: "discard",
+                                        });
+                                        setObservations("");
                                       }}
                                       title="Descartar"
                                     >
@@ -477,7 +507,9 @@ export function AlertsPage() {
                                     </button>
                                   </div>
                                 ) : (
-                                  <span className="alerts-no-actions">Sin acciones</span>
+                                  <span className="alerts-no-actions">
+                                    Sin acciones
+                                  </span>
                                 )}
                               </td>
                             ) : null}
@@ -529,9 +561,9 @@ export function AlertsPage() {
           <div className="modal alerts-premium-modal">
             <div className="modal-header">
               <span className="modal-title">
-                {resolveModal.action === 'resolve'
-                  ? 'Resolver alerta'
-                  : 'Descartar alerta'}
+                {resolveModal.action === "resolve"
+                  ? "Resolver alerta"
+                  : "Descartar alerta"}
               </span>
 
               <button
@@ -546,7 +578,7 @@ export function AlertsPage() {
             <div className="modal-body">
               <div className="alerts-premium-modal-summary">
                 <div className="alerts-premium-modal-icon">
-                  {resolveModal.action === 'resolve' ? (
+                  {resolveModal.action === "resolve" ? (
                     <CheckCircle2 size={20} />
                   ) : (
                     <XCircle size={20} />
@@ -554,9 +586,11 @@ export function AlertsPage() {
                 </div>
 
                 <div>
-                  <strong>{normalizeDisplayText(resolveModal.alert.message)}</strong>
+                  <strong>
+                    {normalizeDisplayText(resolveModal.alert.message)}
+                  </strong>
                   <span>
-                    {ALERT_TYPE_LABELS[resolveModal.alert.type]} ·{' '}
+                    {ALERT_TYPE_LABELS[resolveModal.alert.type]} ·{" "}
                     {formatDateTime(resolveModal.alert.createdAt)}
                   </span>
                 </div>
@@ -585,7 +619,9 @@ export function AlertsPage() {
               <button
                 type="button"
                 className={`btn ${
-                  resolveModal.action === 'resolve' ? 'btn-success' : 'btn-danger'
+                  resolveModal.action === "resolve"
+                    ? "btn-success"
+                    : "btn-danger"
                 }`}
                 onClick={() => void handleAction()}
                 disabled={submitting}
@@ -598,10 +634,10 @@ export function AlertsPage() {
                     />
                     Procesando...
                   </>
-                ) : resolveModal.action === 'resolve' ? (
-                  'Resolver alerta'
+                ) : resolveModal.action === "resolve" ? (
+                  "Resolver alerta"
                 ) : (
-                  'Descartar alerta'
+                  "Descartar alerta"
                 )}
               </button>
             </div>
