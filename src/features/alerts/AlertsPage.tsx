@@ -71,6 +71,7 @@ const alertToneLabel: Record<AlertMetricTone, string> = {
 function getTypeIcon(type: AlertType) {
   if (type === 'EXIT_GEOFENCE') return <MapPinned size={15} />;
   if (type === 'COLLAR_OFFLINE') return <Radio size={15} />;
+  if (type === 'LOW_BATTERY') return <Bell size={15} />;
   return <Bell size={15} />;
 }
 
@@ -83,6 +84,7 @@ function getStatusPremiumClass(status: AlertStatus) {
 function getTypePremiumClass(type: AlertType) {
   if (type === 'EXIT_GEOFENCE') return 'alerts-type-geofence';
   if (type === 'COLLAR_OFFLINE') return 'alerts-type-collar';
+  if (type === 'LOW_BATTERY') return 'alerts-type-default';
   return 'alerts-type-default';
 }
 
@@ -174,7 +176,6 @@ export function AlertsPage() {
   const geofenceCount = alerts.filter((alert) => alert.type === 'EXIT_GEOFENCE').length;
   const collarCount = alerts.filter((alert) => alert.type === 'COLLAR_OFFLINE').length;
   const hasFilters = Boolean(statusFilter || typeFilter);
-
   const metrics: AlertMetricItem[] = [
     {
       label: 'Registros visibles',
@@ -332,6 +333,7 @@ export function AlertsPage() {
                 <option value="">Todos los tipos</option>
                 <option value="EXIT_GEOFENCE">Salida de geocerca</option>
                 <option value="COLLAR_OFFLINE">Collar sin señal</option>
+                <option value="LOW_BATTERY">Batería crítica</option>
               </select>
 
               {hasFilters ? (

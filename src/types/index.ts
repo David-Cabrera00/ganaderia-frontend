@@ -1,11 +1,20 @@
 // ─── Enums (match backend exactly) ──────────────────────────────────────────
 
 export type Role = 'ADMINISTRADOR' | 'SUPERVISOR' | 'OPERADOR' | 'TECNICO';
+
 export type CowStatus = 'SIN_UBICACION' | 'DENTRO' | 'FUERA';
+
 export type CollarStatus = 'ACTIVO' | 'INACTIVO' | 'MANTENIMIENTO';
+
 export type DeviceSignalStatus = 'FUERTE' | 'MEDIA' | 'DEBIL' | 'SIN_SENAL';
-export type AlertType = 'EXIT_GEOFENCE' | 'COLLAR_OFFLINE';
+
+export type AlertType =
+  | 'EXIT_GEOFENCE'
+  | 'COLLAR_OFFLINE'
+  | 'LOW_BATTERY';
+
 export type AlertStatus = 'PENDIENTE' | 'RESUELTA' | 'DESCARTADA';
+
 export type ApiErrorCode =
   | 'RESOURCE_NOT_FOUND'
   | 'BAD_REQUEST'

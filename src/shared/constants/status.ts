@@ -33,6 +33,7 @@ export const COLLAR_STATUS_COLORS: Record<CollarStatus, string> = {
 export const ALERT_TYPE_LABELS: Record<AlertType, string> = {
   EXIT_GEOFENCE: 'Salida de geocerca',
   COLLAR_OFFLINE: 'Collar sin señal',
+  LOW_BATTERY: 'Batería crítica',
 };
 
 export const ALERT_STATUS_LABELS: Record<AlertStatus, string> = {
