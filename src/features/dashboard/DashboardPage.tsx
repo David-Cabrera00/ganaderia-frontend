@@ -37,6 +37,7 @@ import {
   COW_STATUS_LABELS,
   formatDateTime,
 } from '@/utils/helpers';
+import { formatDisplayText } from '@/shared/utils/formatText';
 import { DashboardMetricCard } from '@/features/dashboard/components/DashboardMetricCard';
 import { DashboardHealthCard } from '@/features/dashboard/components/DashboardHealthCard';
 import { DashboardOperationsMap } from '@/features/dashboard/components/DashboardOperationsMap';
@@ -346,8 +347,8 @@ export function DashboardPage() {
                         <strong>{item.title}</strong>
                       </div>
 
-                      <span>{item.subtitle}</span>
-                      <small>{item.meta}</small>
+                      <span>{formatDisplayText(item.subtitle)}</span>
+                      <small>{formatDisplayText(item.meta)}</small>
                     </article>
                   ))}
                 </div>
