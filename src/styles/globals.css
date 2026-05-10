@@ -1128,6 +1128,28 @@ tbody td {
   color: var(--accent);
   background: var(--accent-dim);
 }
+/* Separación visual entre icono y badge en KPIs del dashboard */
+.dashboard-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.dashboard-kpi-top .dashboard-kpi-icon {
+  flex-shrink: 0;
+}
+
+.dashboard-kpi-top .badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
 
 .dashboard-kpi-copy {
   display: grid;
