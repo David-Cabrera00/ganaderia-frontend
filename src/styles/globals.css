@@ -8754,3 +8754,66 @@ body,
 .alerts-premium-table-shell .empty-state {
   padding: 42px 20px;
 }
+/* Selector visual de centro para geocercas */
+.geofences-map-picker-field {
+  grid-column: 1 / -1;
+}
+
+.geofences-map-picker-help {
+  margin: -4px 0 12px;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.geofences-map-picker {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(212, 177, 106, 0.28);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.72);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+}
+
+.geofences-map-picker-map {
+  width: 100%;
+  height: 280px;
+  min-height: 280px;
+}
+
+.geofences-map-picker-coordinates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.geofences-map-picker-coordinates span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 13px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.58);
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.geofences-map-picker-coordinates strong {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+}
+
+@media (max-width: 720px) {
+  .geofences-map-picker-coordinates {
+    grid-template-columns: 1fr;
+  }
+
+  .geofences-map-picker-map {
+    height: 240px;
+    min-height: 240px;
+  }
+}

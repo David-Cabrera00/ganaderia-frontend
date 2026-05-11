@@ -1,6 +1,20 @@
-import { useEffect, useMemo, useState, useCallback, type ReactNode } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
+import { useForm } from "react-hook-form";
+import {
+  Circle,
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMapEvents,
+} from "react-leaflet";
+import type { LatLngExpression } from "leaflet";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AlertCircle,
   ClipboardList,
@@ -15,21 +29,29 @@ import {
   ShieldCheck,
   Sparkles,
   X,
-} from 'lucide-react';
-import toast from 'react-hot-toast';
-import { CattleIcon } from '@/shared/components/ui/CattleIcon';
-import { GeofenceService, CowService } from '@/api/services';
-import { AppError } from '@/shared/errors/AppError';
-import { geofenceSchema, type GeofenceFormValues } from '@/utils/validations';
-import { sanitizeSearchInput, sanitizeTextInput } from '@/shared/utils/sanitize';
-import type { GeofenceResponse, CowResponse } from '@/types';
-import { PageContainer } from '@/layouts/components/PageContainer';
-import { PageHeader } from '@/layouts/components/PageHeader';
-import { Button } from '@/shared/components/ui/Button';
-import { GeofencesMap } from '@/features/geofences/components/GeofencesMap';
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { CattleIcon } from "@/shared/components/ui/CattleIcon";
+import { GeofenceService, CowService } from "@/api/services";
+import { AppError } from "@/shared/errors/AppError";
+import { geofenceSchema, type GeofenceFormValues } from "@/utils/validations";
+import {
+  sanitizeSearchInput,
+  sanitizeTextInput,
+} from "@/shared/utils/sanitize";
+import type { GeofenceResponse, CowResponse } from "@/types";
+import { PageContainer } from "@/layouts/components/PageContainer";
+import { PageHeader } from "@/layouts/components/PageHeader";
+import { Button } from "@/shared/components/ui/Button";
+import { GeofencesMap } from "@/features/geofences/components/GeofencesMap";
 
-type GeofenceStatusFilter = 'ALL' | 'ACTIVE' | 'INACTIVE' | 'ASSIGNED' | 'UNASSIGNED';
-type GeofenceMetricTone = 'info' | 'success' | 'warning' | 'danger';
+type GeofenceStatusFilter =
+  | "ALL"
+  | "ACTIVE"
+  | "INACTIVE"
+  | "ASSIGNED"
+  | "UNASSIGNED";
+type GeofenceMetricTone = "info" | "success" | "warning" | "danger";
 
 interface GeofenceMetricItem {
   label: string;
@@ -40,26 +62,114 @@ interface GeofenceMetricItem {
 }
 
 const statusFilters: Array<{ label: string; value: GeofenceStatusFilter }> = [
-  { label: 'Todas', value: 'ALL' },
-  { label: 'Activas', value: 'ACTIVE' },
-  { label: 'Inactivas', value: 'INACTIVE' },
-  { label: 'Asignadas', value: 'ASSIGNED' },
-  { label: 'Sin asignar', value: 'UNASSIGNED' },
+  { label: "Todas", value: "ALL" },
+  { label: "Activas", value: "ACTIVE" },
+  { label: "Inactivas", value: "INACTIVE" },
+  { label: "Asignadas", value: "ASSIGNED" },
+  { label: "Sin asignar", value: "UNASSIGNED" },
 ];
 
 const geofenceMetricToneLabels: Record<GeofenceMetricTone, string> = {
-  info: 'Territorio',
-  success: 'Activa',
-  warning: 'Revisión',
-  danger: 'Inactiva',
+  info: "Territorio",
+  success: "Activa",
+  warning: "Revisión",
+  danger: "Inactiva",
 };
 
+const DEFAULT_GEOFENCE_CENTER: LatLngExpression = [1.2136, -77.2811];
+
+interface GeofenceCenterPickerProps {
+  selectedLatitude?: number;
+  selectedLongitude?: number;
+  radiusMeters?: number;
+  onSelect: (latitude: number, longitude: number) => void;
+}
+
+function GeofenceMapClickHandler({
+  onSelect,
+}: {
+  onSelect: (latitude: number, longitude: number) => void;
+}) {
+  useMapEvents({
+    click(event) {
+      onSelect(
+        Number(event.latlng.lat.toFixed(6)),
+        Number(event.latlng.lng.toFixed(6)),
+      );
+    },
+  });
+
+  return null;
+}
+
+function GeofenceCenterPicker({
+  selectedLatitude,
+  selectedLongitude,
+  radiusMeters,
+  onSelect,
+}: GeofenceCenterPickerProps) {
+  const hasSelectedCenter =
+    typeof selectedLatitude === "number" &&
+    Number.isFinite(selectedLatitude) &&
+    typeof selectedLongitude === "number" &&
+    Number.isFinite(selectedLongitude);
+
+  const selectedPosition: LatLngExpression | null = hasSelectedCenter
+    ? [selectedLatitude, selectedLongitude]
+    : null;
+
+  const mapCenter = selectedPosition ?? DEFAULT_GEOFENCE_CENTER;
+
+  const safeRadius =
+    typeof radiusMeters === "number" &&
+    Number.isFinite(radiusMeters) &&
+    radiusMeters > 0
+      ? radiusMeters
+      : 0;
+
+  return (
+    <div className="geofences-map-picker">
+      <MapContainer
+        center={mapCenter}
+        zoom={14}
+        scrollWheelZoom
+        className="geofences-map-picker-map"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        <GeofenceMapClickHandler onSelect={onSelect} />
+
+        {selectedPosition ? (
+          <>
+            <Marker position={selectedPosition} />
+
+            {safeRadius > 0 ? (
+              <Circle
+                center={selectedPosition}
+                radius={safeRadius}
+                pathOptions={{
+                  color: "#d4b16a",
+                  fillColor: "#d4b16a",
+                  fillOpacity: 0.18,
+                }}
+              />
+            ) : null}
+          </>
+        ) : null}
+      </MapContainer>
+    </div>
+  );
+}
+
 function getGeofenceStatusClass(active: boolean) {
-  return active ? 'geofences-status-active' : 'geofences-status-inactive';
+  return active ? "geofences-status-active" : "geofences-status-inactive";
 }
 
 function getAssignmentClass(cowId: number | null) {
-  return cowId ? 'geofences-assigned' : 'geofences-unassigned';
+  return cowId ? "geofences-assigned" : "geofences-unassigned";
 }
 
 export function GeofencesPage() {
@@ -68,14 +178,18 @@ export function GeofencesPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<GeofenceStatusFilter>('ALL');
-  const [selectedGeofenceId, setSelectedGeofenceId] = useState<number | null>(null);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<GeofenceStatusFilter>("ALL");
+  const [selectedGeofenceId, setSelectedGeofenceId] = useState<number | null>(
+    null,
+  );
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<GeofenceFormValues>({
     resolver: zodResolver(geofenceSchema),
@@ -83,6 +197,10 @@ export function GeofencesPage() {
       active: true,
     },
   });
+
+  const selectedCenterLatitude = watch("centerLatitude");
+  const selectedCenterLongitude = watch("centerLongitude");
+  const selectedRadiusMeters = watch("radiusMeters");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -123,15 +241,15 @@ export function GeofencesPage() {
         (geofence.cowToken?.toLowerCase().includes(q) ?? false);
 
       const matchesFilter =
-        statusFilter === 'ALL'
+        statusFilter === "ALL"
           ? true
-          : statusFilter === 'ACTIVE'
-          ? geofence.active
-          : statusFilter === 'INACTIVE'
-          ? !geofence.active
-          : statusFilter === 'ASSIGNED'
-          ? geofence.cowId !== null
-          : geofence.cowId === null;
+          : statusFilter === "ACTIVE"
+            ? geofence.active
+            : statusFilter === "INACTIVE"
+              ? !geofence.active
+              : statusFilter === "ASSIGNED"
+                ? geofence.cowId !== null
+                : geofence.cowId === null;
 
       return matchesSearch && matchesFilter;
     });
@@ -148,14 +266,14 @@ export function GeofencesPage() {
 
   const selectedGeofence =
     selectedGeofenceId !== null
-      ? filtered.find((item) => item.id === selectedGeofenceId) ??
+      ? (filtered.find((item) => item.id === selectedGeofenceId) ??
         geofences.find((item) => item.id === selectedGeofenceId) ??
-        null
+        null)
       : null;
 
   const openCreate = () => {
     reset({
-      name: '',
+      name: "",
       centerLatitude: undefined,
       centerLongitude: undefined,
       radiusMeters: undefined,
@@ -164,6 +282,20 @@ export function GeofencesPage() {
     });
     setServerError(null);
     setModalOpen(true);
+  };
+
+  const handleSelectGeofenceCenter = (latitude: number, longitude: number) => {
+    setValue("centerLatitude", latitude, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+
+    setValue("centerLongitude", longitude, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
   };
 
   const onSubmit = async (values: GeofenceFormValues) => {
@@ -179,7 +311,7 @@ export function GeofencesPage() {
         cowId: values.cowId,
       });
 
-      toast.success('Geocerca creada correctamente');
+      toast.success("Geocerca creada correctamente");
       setModalOpen(false);
       void load();
     } catch (err) {
@@ -189,7 +321,9 @@ export function GeofencesPage() {
 
   const activeCount = geofences.filter((geofence) => geofence.active).length;
   const inactiveCount = geofences.length - activeCount;
-  const assignedCount = geofences.filter((geofence) => geofence.cowId !== null).length;
+  const assignedCount = geofences.filter(
+    (geofence) => geofence.cowId !== null,
+  ).length;
   const averageRadius =
     geofences.length > 0
       ? Math.round(
@@ -200,31 +334,31 @@ export function GeofencesPage() {
 
   const metrics: GeofenceMetricItem[] = [
     {
-      label: 'Geocercas totales',
+      label: "Geocercas totales",
       value: geofences.length,
-      helper: 'Perímetros configurados en el sistema.',
-      tone: 'info',
+      helper: "Perímetros configurados en el sistema.",
+      tone: "info",
       icon: <MapPin size={24} />,
     },
     {
-      label: 'Activas',
+      label: "Activas",
       value: activeCount,
-      helper: 'Zonas listas para seguimiento territorial.',
-      tone: 'success',
+      helper: "Zonas listas para seguimiento territorial.",
+      tone: "success",
       icon: <ShieldCheck size={24} />,
     },
     {
-      label: 'Asignadas',
+      label: "Asignadas",
       value: assignedCount,
-      helper: 'Perímetros vinculados a animales.',
-      tone: 'warning',
+      helper: "Perímetros vinculados a animales.",
+      tone: "warning",
       icon: <CattleIcon width={24} height={24} />,
     },
     {
-      label: 'Radio promedio',
+      label: "Radio promedio",
       value: `${averageRadius} m`,
-      helper: 'Promedio de cobertura configurada.',
-      tone: inactiveCount > 0 ? 'warning' : 'info',
+      helper: "Promedio de cobertura configurada.",
+      tone: inactiveCount > 0 ? "warning" : "info",
       icon: <Ruler size={24} />,
     },
   ];
@@ -255,8 +389,9 @@ export function GeofencesPage() {
             <h2>Gestión visual de perímetros y zonas de monitoreo ganadero</h2>
 
             <p>
-              Administra las zonas de control, revisa radios de cobertura, centros
-              geográficos y asignaciones del hato en un panel territorial unificado.
+              Administra las zonas de control, revisa radios de cobertura,
+              centros geográficos y asignaciones del hato en un panel
+              territorial unificado.
             </p>
 
             <div className="geofences-premium-pills">
@@ -277,11 +412,11 @@ export function GeofencesPage() {
 
           <div className="geofences-premium-hero-card">
             <span>Geocerca seleccionada</span>
-            <strong>{selectedGeofence?.name ?? '—'}</strong>
+            <strong>{selectedGeofence?.name ?? "—"}</strong>
             <small>
               {selectedGeofence
-                ? selectedGeofence.cowName ?? 'Sin vaca asignada'
-                : 'Selecciona una zona para ver el detalle rápido.'}
+                ? (selectedGeofence.cowName ?? "Sin vaca asignada")
+                : "Selecciona una zona para ver el detalle rápido."}
             </small>
           </div>
         </section>
@@ -293,7 +428,9 @@ export function GeofencesPage() {
               className={`geofences-premium-metric geofences-premium-metric-${metric.tone}`}
             >
               <div className="geofences-premium-metric-top">
-                <div className="geofences-premium-metric-icon">{metric.icon}</div>
+                <div className="geofences-premium-metric-icon">
+                  {metric.icon}
+                </div>
 
                 <span className="geofences-premium-metric-status">
                   <Sparkles size={13} />
@@ -317,7 +454,9 @@ export function GeofencesPage() {
 
               <div>
                 <strong>Búsqueda territorial</strong>
-                <span>Filtra por nombre de geocerca, vaca asignada o token.</span>
+                <span>
+                  Filtra por nombre de geocerca, vaca asignada o token.
+                </span>
               </div>
             </div>
 
@@ -360,7 +499,7 @@ export function GeofencesPage() {
                   key={item.value}
                   type="button"
                   className={`geofences-premium-filter-chip ${
-                    statusFilter === item.value ? 'active' : ''
+                    statusFilter === item.value ? "active" : ""
                   }`}
                   onClick={() => setStatusFilter(item.value)}
                 >
@@ -389,7 +528,7 @@ export function GeofencesPage() {
               <button
                 type="button"
                 className={`geofences-premium-selection-chip ${
-                  selectedGeofenceId === null ? 'active' : ''
+                  selectedGeofenceId === null ? "active" : ""
                 }`}
                 onClick={() => setSelectedGeofenceId(null)}
               >
@@ -401,7 +540,7 @@ export function GeofencesPage() {
                   key={geofence.id}
                   type="button"
                   className={`geofences-premium-selection-chip ${
-                    selectedGeofenceId === geofence.id ? 'active' : ''
+                    selectedGeofenceId === geofence.id ? "active" : ""
                   }`}
                   onClick={() => setSelectedGeofenceId(geofence.id)}
                 >
@@ -430,7 +569,7 @@ export function GeofencesPage() {
                   selectedGeofence.active,
                 )}`}
               >
-                {selectedGeofence.active ? 'Activa' : 'Inactiva'}
+                {selectedGeofence.active ? "Activa" : "Inactiva"}
               </span>
             </div>
 
@@ -449,14 +588,14 @@ export function GeofencesPage() {
                 <div className="geofences-premium-detail-item">
                   <span>Centro</span>
                   <strong>
-                    {selectedGeofence.centerLatitude.toFixed(4)},{' '}
+                    {selectedGeofence.centerLatitude.toFixed(4)},{" "}
                     {selectedGeofence.centerLongitude.toFixed(4)}
                   </strong>
                 </div>
 
                 <div className="geofences-premium-detail-item">
                   <span>Vaca asignada</span>
-                  <strong>{selectedGeofence.cowName ?? 'Sin asignar'}</strong>
+                  <strong>{selectedGeofence.cowName ?? "Sin asignar"}</strong>
                 </div>
               </div>
             </div>
@@ -514,7 +653,8 @@ export function GeofencesPage() {
                           <div className="empty-state">
                             <MapPin size={32} className="empty-state-icon" />
                             <span className="empty-state-text">
-                              No hay geocercas que coincidan con el filtro actual.
+                              No hay geocercas que coincidan con el filtro
+                              actual.
                             </span>
                           </div>
                         </td>
@@ -525,8 +665,8 @@ export function GeofencesPage() {
                           key={geofence.id}
                           className={
                             selectedGeofenceId === geofence.id
-                              ? 'geofences-row-selected'
-                              : ''
+                              ? "geofences-row-selected"
+                              : ""
                           }
                           onClick={() => setSelectedGeofenceId(geofence.id)}
                         >
@@ -561,7 +701,7 @@ export function GeofencesPage() {
                                 geofence.cowId,
                               )}`}
                             >
-                              {geofence.cowName ?? 'Sin asignar'}
+                              {geofence.cowName ?? "Sin asignar"}
                             </span>
                           </td>
 
@@ -571,7 +711,7 @@ export function GeofencesPage() {
                                 geofence.active,
                               )}`}
                             >
-                              {geofence.active ? 'Activa' : 'Inactiva'}
+                              {geofence.active ? "Activa" : "Inactiva"}
                             </span>
                           </td>
                         </tr>
@@ -615,31 +755,35 @@ export function GeofencesPage() {
                   <div>
                     <strong>Nuevo perímetro territorial</strong>
                     <span>
-                      Define centro, radio, estado y asignación opcional.
+                      Selecciona el centro en el mapa, define el radio y asigna
+                      una vaca si aplica.
                     </span>
                   </div>
                 </div>
 
                 {serverError ? (
-                  <div className="alert-banner error" style={{ marginBottom: 16 }}>
+                  <div
+                    className="alert-banner error"
+                    style={{ marginBottom: 16 }}
+                  >
                     <AlertCircle
                       size={14}
-                      style={{ display: 'inline', marginRight: 6 }}
+                      style={{ display: "inline", marginRight: 6 }}
                     />
                     {serverError}
                   </div>
                 ) : null}
 
                 <div className="form-grid">
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <div className="form-group" style={{ gridColumn: "1 / -1" }}>
                     <label className="form-label">Nombre *</label>
                     <input
-                      className={`form-input ${errors.name ? 'error' : ''}`}
+                      className={`form-input ${errors.name ? "error" : ""}`}
                       placeholder="ej. Potrero Norte"
                       maxLength={80}
-                      {...register('name', {
+                      {...register("name", {
                         setValueAs: (value) =>
-                          sanitizeTextInput(value ?? '', 80),
+                          sanitizeTextInput(value ?? "", 80),
                       })}
                     />
 
@@ -652,63 +796,15 @@ export function GeofencesPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Latitud centro *</label>
-                    <input
-                      type="number"
-                      step="any"
-                      className={`form-input ${
-                        errors.centerLatitude ? 'error' : ''
-                      }`}
-                      placeholder="1.213600"
-                      {...register('centerLatitude', {
-                        setValueAs: (value) =>
-                          value === '' ? undefined : Number(value),
-                      })}
-                    />
-
-                    {errors.centerLatitude ? (
-                      <span className="form-error">
-                        <AlertCircle size={11} />
-                        {errors.centerLatitude.message}
-                      </span>
-                    ) : null}
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Longitud centro *</label>
-                    <input
-                      type="number"
-                      step="any"
-                      className={`form-input ${
-                        errors.centerLongitude ? 'error' : ''
-                      }`}
-                      placeholder="-77.281100"
-                      {...register('centerLongitude', {
-                        setValueAs: (value) =>
-                          value === '' ? undefined : Number(value),
-                      })}
-                    />
-
-                    {errors.centerLongitude ? (
-                      <span className="form-error">
-                        <AlertCircle size={11} />
-                        {errors.centerLongitude.message}
-                      </span>
-                    ) : null}
-                  </div>
-
-                  <div className="form-group">
                     <label className="form-label">Radio (m) *</label>
                     <input
                       type="number"
                       min={1}
-                      className={`form-input ${
-                        errors.radiusMeters ? 'error' : ''
-                      }`}
+                      className={`form-input ${errors.radiusMeters ? "error" : ""}`}
                       placeholder="500"
-                      {...register('radiusMeters', {
+                      {...register("radiusMeters", {
                         setValueAs: (value) =>
-                          value === '' ? undefined : Number(value),
+                          value === "" ? undefined : Number(value),
                       })}
                     />
 
@@ -724,9 +820,9 @@ export function GeofencesPage() {
                     <label className="form-label">Vaca asignada</label>
                     <select
                       className="form-select"
-                      {...register('cowId', {
+                      {...register("cowId", {
                         setValueAs: (value) =>
-                          value === '' ? undefined : Number(value),
+                          value === "" ? undefined : Number(value),
                       })}
                     >
                       <option value="">Sin asignar</option>
@@ -738,11 +834,63 @@ export function GeofencesPage() {
                     </select>
                   </div>
 
-                  <div className="form-group" style={{ alignSelf: 'end' }}>
+                  <div className="form-group" style={{ alignSelf: "end" }}>
                     <label className="geofences-premium-checkbox">
-                      <input type="checkbox" defaultChecked {...register('active')} />
+                      <input
+                        type="checkbox"
+                        defaultChecked
+                        {...register("active")}
+                      />
                       <span>Geocerca activa</span>
                     </label>
+                  </div>
+
+                  <div className="form-group geofences-map-picker-field">
+                    <label className="form-label">
+                      Centro de la geocerca *
+                    </label>
+
+                    <p className="geofences-map-picker-help">
+                      Haz clic en el mapa para seleccionar el punto central del
+                      perímetro.
+                    </p>
+
+                    <input type="hidden" {...register("centerLatitude")} />
+                    <input type="hidden" {...register("centerLongitude")} />
+
+                    <GeofenceCenterPicker
+                      selectedLatitude={selectedCenterLatitude}
+                      selectedLongitude={selectedCenterLongitude}
+                      radiusMeters={selectedRadiusMeters}
+                      onSelect={handleSelectGeofenceCenter}
+                    />
+
+                    <div className="geofences-map-picker-coordinates">
+                      <span>
+                        Latitud:{" "}
+                        <strong>
+                          {typeof selectedCenterLatitude === "number"
+                            ? selectedCenterLatitude.toFixed(6)
+                            : "Sin seleccionar"}
+                        </strong>
+                      </span>
+
+                      <span>
+                        Longitud:{" "}
+                        <strong>
+                          {typeof selectedCenterLongitude === "number"
+                            ? selectedCenterLongitude.toFixed(6)
+                            : "Sin seleccionar"}
+                        </strong>
+                      </span>
+                    </div>
+
+                    {errors.centerLatitude || errors.centerLongitude ? (
+                      <span className="form-error">
+                        <AlertCircle size={11} />
+                        Selecciona el centro de la geocerca en el mapa.
+                      </span>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -763,14 +911,14 @@ export function GeofencesPage() {
                 >
                   {isSubmitting ? (
                     <>
-                    <span
+                      <span
                         className="loading-spinner"
                         style={{ width: 14, height: 14, borderWidth: 2 }}
                       />
                       Guardando...
                     </>
                   ) : (
-                    'Crear geocerca'
+                    "Crear geocerca"
                   )}
                 </button>
               </div>
