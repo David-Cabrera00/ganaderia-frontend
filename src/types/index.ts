@@ -219,3 +219,16 @@ export interface SessionData {
   token: string;
   expiresAt: number; // timestamp ms
 }
+export type AlertAiRiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+
+export type AlertAiAnalysisSource = 'AI' | 'RULE_BASED_FALLBACK';
+
+export interface AlertAiSummaryResponse {
+  summary: string;
+  riskLevel: AlertAiRiskLevel;
+  recommendation?: string;
+  recommendations?: string[];
+  source: AlertAiAnalysisSource;
+  fallbackUsed: boolean;
+  generatedAt?: string;
+}

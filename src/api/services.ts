@@ -1,5 +1,6 @@
 import { httpClient } from './httpClient';
 import type {
+   AlertAiSummaryResponse,
   AlertResponse,
   AlertStatus,
   AlertType,
@@ -192,13 +193,17 @@ export class AlertService {
     return response.data as AlertResponse;
   }
 }
-
+export class AlertAnalysisService {
+  static async getAiSummary(): Promise<AlertAiSummaryResponse> {
+    const response = await httpClient.get('/api/alert-analysis/ai-summary');
+    return response.data as AlertAiSummaryResponse;
+  }
+}
 export class DashboardService {
   static async getSummary(): Promise<DashboardSummary> {
     const response = await httpClient.get('/api/dashboard/summary');
     return response.data as DashboardSummary;
   }
-
   static async getCriticalAlerts(): Promise<AlertResponse[]> {
     const response = await httpClient.get('/api/dashboard/critical-alerts');
     return response.data as AlertResponse[];
