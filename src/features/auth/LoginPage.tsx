@@ -1,19 +1,21 @@
-import { useState } from 'react';
-import type { KeyboardEvent } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, AlertCircle, ShieldCheck, Radio } from 'lucide-react';
-import { AuthService } from '@/api/services';
-import { AppError } from '@/api/httpClient';
-import { useAuthStore } from '@/stores/authStore';
-import { loginSchema, type LoginFormValues } from '@/utils/validations';
-import type { SessionData } from '@/types';
-import { CattleIcon } from '@/shared/components/ui/CattleIcon';
-import './LoginPage.css';
+import { useState } from "react";
+import type { KeyboardEvent } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Eye, EyeOff, Radio, ShieldCheck } from "lucide-react";
+
+import { AuthService } from "@/api/services";
+import { AppError } from "@/api/httpClient";
+import { useAuthStore } from "@/stores/authStore";
+import { CattleIcon } from "@/shared/components/ui/CattleIcon";
+import { loginSchema, type LoginFormValues } from "@/utils/validations";
+import type { SessionData } from "@/types";
+
+import "./LoginPage.css";
 
 const preventWhitespace = (event: KeyboardEvent<HTMLInputElement>) => {
-  if (event.key === ' ') event.preventDefault();
+  if (event.key === " ") event.preventDefault();
 };
 
 export function LoginPage() {
@@ -26,7 +28,7 @@ export function LoginPage() {
 
   const from =
     (location.state as { from?: { pathname: string } })?.from?.pathname ??
-    '/dashboard';
+    "/dashboard";
 
   const {
     register,
@@ -73,9 +75,12 @@ export function LoginPage() {
 
           <div className="login-hero-copy">
             <span className="login-eyebrow">Sistema de monitoreo ganadero</span>
+
             <h1 className="login-title">Ganadería 4.0</h1>
+
             <p className="login-subtitle">
-              Gestiona vacas, collares, geocercas, alertas y reportes desde una sola plataforma.
+              Gestiona vacas, collares, geocercas, alertas y reportes desde una
+              sola plataforma.
             </p>
           </div>
 
@@ -84,18 +89,38 @@ export function LoginPage() {
               <ShieldCheck size={16} />
               Control operativo del hato en tiempo real.
             </div>
+
             <div className="login-feature-item">
               <Radio size={16} />
               Seguimiento de activos y trazabilidad de ubicaciones.
             </div>
           </div>
+
+          <div className="login-authors-footer">
+            <span>Desarrollado por</span>
+
+            <p>
+              Jorge Alejandro Parra
+              <strong>·</strong>
+              Luis Sebastian Diaz
+              <strong>·</strong>
+              David Andres Cabrera
+            </p>
+          </div>
         </div>
 
         <div className="login-form-panel">
-          <form onSubmit={handleSubmit(onSubmit)} className="login-form" noValidate>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="login-form"
+            noValidate
+          >
             {serverError ? (
               <div className="alert-banner error" role="alert">
-                <AlertCircle size={15} style={{ display: 'inline', marginRight: 6 }} />
+                <AlertCircle
+                  size={15}
+                  style={{ display: "inline", marginRight: 6 }}
+                />
                 {serverError}
               </div>
             ) : null}
@@ -104,19 +129,22 @@ export function LoginPage() {
               <label className="form-label" htmlFor="email">
                 Correo electrónico
               </label>
+
               <input
                 id="email"
                 type="email"
                 autoComplete="email"
                 autoFocus
-                className={`form-input ${errors.email ? 'error' : ''}`}
+                className={`form-input ${errors.email ? "error" : ""}`}
                 placeholder="correo@ejemplo.com"
-                {...register('email')}
+                {...register("email")}
                 onKeyDown={preventWhitespace}
               />
+
               {errors.email ? (
                 <span className="form-error">
-                  <AlertCircle size={12} /> {errors.email.message}
+                  <AlertCircle size={12} />
+                  {errors.email.message}
                 </span>
               ) : null}
             </div>
@@ -129,11 +157,11 @@ export function LoginPage() {
               <div className="password-wrapper">
                 <input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
-                  className={`form-input ${errors.password ? 'error' : ''}`}
+                  className={`form-input ${errors.password ? "error" : ""}`}
                   placeholder="••••••••"
-                  {...register('password')}
+                  {...register("password")}
                   onKeyDown={preventWhitespace}
                 />
 
@@ -143,7 +171,7 @@ export function LoginPage() {
                   onClick={() => setShowPassword((previous) => !previous)}
                   tabIndex={-1}
                   aria-label={
-                    showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
+                    showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
                   }
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -152,7 +180,8 @@ export function LoginPage() {
 
               {errors.password ? (
                 <span className="form-error">
-                  <AlertCircle size={12} /> {errors.password.message}
+                  <AlertCircle size={12} />
+                  {errors.password.message}
                 </span>
               ) : null}
             </div>
@@ -171,7 +200,7 @@ export function LoginPage() {
                   Iniciando sesión...
                 </>
               ) : (
-                'Ingresar al panel'
+                "Ingresar al panel"
               )}
             </button>
           </form>
@@ -179,21 +208,25 @@ export function LoginPage() {
           <div className="local-credentials credentials-grid">
             <div>
               <strong>Credenciales de acceso</strong>
+
               <div>
                 <code>admin@ganaderia.com</code>
               </div>
+
               <div>
                 <code>123ganadero456*</code>
               </div>
             </div>
 
             <div className="local-credentials-note">
-              Usuario administrador con acceso a dashboard, gestión operativa y reportes.
+              Usuario administrador con acceso a dashboard, gestión operativa y
+              reportes.
             </div>
           </div>
 
           <p className="login-footer-note">
-            Accede al panel principal para supervisar indicadores, activos y eventos del sistema.
+            Accede al panel principal para supervisar indicadores, activos y
+            eventos del sistema.
           </p>
         </div>
       </div>
