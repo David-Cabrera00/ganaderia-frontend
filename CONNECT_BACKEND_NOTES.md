@@ -26,13 +26,6 @@ pero no aparecen endpoints para:
 
 Como el módulo del frontend sí usa esas acciones, se dejó local para no romper el flujo actual.
 
-## Variable de entorno
-La app usa:
-
-```env
-VITE_API_URL=https://ganaderia4backend.onrender.com
-```
-
 ## Antes de probar
 1. Instala dependencias:
    ```bash
