@@ -1,3 +1,15 @@
+.login-page-fixed-theme {
+  --bg-base: #020617;
+  --bg-surface: #0f172a;
+  --text-primary: #f8fafc;
+  --text-secondary: rgba(226, 232, 240, 0.78);
+  --text-muted: rgba(148, 163, 184, 0.9);
+  --accent: #d4b16a;
+  --accent-dim: rgba(212, 177, 106, 0.15);
+  --border: rgba(93, 125, 180, 0.26);
+  --input-bg: rgba(2, 6, 23, 0.72);
+}
+
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -84,43 +96,6 @@
   justify-content: center;
 }
 
-.login-eyebrow {
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-}
-
-.login-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.03em;
-}
-
-.login-subtitle {
-  font-size: 0.94rem;
-  color: var(--text-secondary);
-  max-width: 46ch;
-}
-
-.login-feature-list {
-  display: grid;
-  gap: 12px;
-}
-
-.login-feature-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--text-secondary);
-}
-
 .login-form {
   display: flex;
   flex-direction: column;
@@ -129,10 +104,6 @@
 
 .password-wrapper {
   position: relative;
-}
-
-.password-wrapper .form-input {
-  padding-right: 42px;
 }
 
 .password-toggle {
@@ -151,51 +122,6 @@
 
 .password-toggle:hover {
   color: var(--text-primary);
-}
-
-.login-submit {
-  width: 100%;
-  justify-content: center;
-  padding: 11px;
-  margin-top: 4px;
-  font-size: 0.95rem;
-}
-
-.local-credentials {
-  margin-top: 22px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.credentials-grid {
-  display: grid;
-  gap: 14px;
-  grid-template-columns: 1fr 1fr;
-}
-
-.local-credentials strong {
-  display: block;
-  margin-bottom: 8px;
-}
-
-.local-credentials code {
-  display: inline-block;
-  margin-top: 4px;
-  font-family: var(--font-mono);
-  color: var(--accent);
-}
-
-.local-credentials-note {
-  color: var(--text-secondary);
-  font-size: 0.84rem;
-}
-
-.login-footer-note {
-  font-size: 0.74rem;
-  color: var(--text-muted);
-  margin-top: 18px;
 }
 
 @media (max-width: 860px) {
@@ -360,7 +286,7 @@
   gap: 20px;
 }
 
-.form-label {
+.login-page-fixed-theme .form-label {
   margin-bottom: 9px;
   color: rgba(220, 231, 255, 0.86);
   font-size: 0.76rem;
@@ -370,7 +296,7 @@
 }
 
 /* Inputs más premium */
-.form-input {
+.login-page-fixed-theme .form-input {
   min-height: 50px;
   padding: 0 18px;
   border-radius: 14px;
@@ -384,7 +310,7 @@
     background 0.18s ease;
 }
 
-.form-input:focus {
+.login-page-fixed-theme .form-input:focus {
   border-color: rgba(212, 177, 106, 0.72);
   background: rgba(2, 6, 23, 0.48);
   box-shadow:
@@ -393,7 +319,7 @@
   outline: none;
 }
 
-.password-wrapper .form-input {
+.login-page-fixed-theme .password-wrapper .form-input {
   padding-right: 48px;
 }
 
@@ -404,6 +330,10 @@
 
 /* Botón */
 .login-submit {
+  width: 100%;
+  justify-content: center;
+  padding: 11px;
+  font-size: 0.95rem;
   min-height: 52px;
   margin-top: 6px;
   border-radius: 14px;

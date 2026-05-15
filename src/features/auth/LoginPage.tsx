@@ -64,7 +64,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="login-page">
+    <div className="login-page login-page-fixed-theme">
       <div className="login-bg" />
 
       <div className="login-card login-card-wide">
