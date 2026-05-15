@@ -1737,16 +1737,16 @@ body {
 }
 
 :root[data-theme="light"] {
-  --bg-base: #f4f7fc !important;
+  --bg-base: #f8fafc !important;
   --bg-surface: #ffffff !important;
-  --bg-elevated: #edf2fa !important;
-  --bg-hover: #e4ebf7 !important;
-  --border: #d8e0ee !important;
-  --border-light: #bac7dc !important;
+  --bg-elevated: #eef3f9 !important;
+  --bg-hover: #edf4ff !important;
+  --border: rgba(148, 163, 184, 0.35) !important;
+  --border-light: rgba(148, 163, 184, 0.5) !important;
 
-  --text-primary: #182235 !important;
-  --text-secondary: #58657d !important;
-  --text-muted: #7b879d !important;
+  --text-primary: #0f172a !important;
+  --text-secondary: #334155 !important;
+  --text-muted: #64748b !important;
 
   --accent: #b88b3e !important;
   --accent-dim: rgba(184, 139, 62, 0.12) !important;
@@ -1761,12 +1761,325 @@ body {
   --blue: #416fd9 !important;
   --blue-dim: rgba(65, 111, 217, 0.12) !important;
 
-  --shadow: 0 10px 24px rgba(24, 34, 53, 0.08) !important;
-  --shadow-lg: 0 18px 44px rgba(24, 34, 53, 0.12) !important;
-  --topbar-bg: rgba(244, 247, 252, 0.88) !important;
-  --topbar-pill-bg: rgba(255, 255, 255, 0.9) !important;
-  --topbar-pill-border: rgba(24, 34, 53, 0.08) !important;
-  --surface-soft: rgba(24, 34, 53, 0.04) !important;
+  --shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+  --shadow-lg: 0 18px 44px rgba(15, 23, 42, 0.12) !important;
+  --topbar-bg: rgba(248, 250, 252, 0.92) !important;
+  --topbar-pill-bg: rgba(255, 255, 255, 0.95) !important;
+  --topbar-pill-border: rgba(148, 163, 184, 0.25) !important;
+  --surface-soft: rgba(15, 23, 42, 0.04) !important;
+}
+
+/* ─── Light Mode Overrides ─────────────────────────────────────────────────── */
+:root[data-theme="light"] body,
+:root[data-theme="light"] .app-content {
+  background:
+    radial-gradient(circle at top, rgba(184, 139, 62, 0.04), transparent 32%),
+    var(--bg-base) !important;
+}
+
+:root[data-theme="light"] .form-input,
+:root[data-theme="light"] .form-select,
+:root[data-theme="light"] .form-textarea {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="light"] .form-input:focus,
+:root[data-theme="light"] .form-select:focus,
+:root[data-theme="light"] .form-textarea:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-dim) !important;
+}
+
+:root[data-theme="light"] .form-input.error,
+:root[data-theme="light"] .form-select.error,
+:root[data-theme="light"] .form-textarea.error {
+  border-color: var(--red) !important;
+}
+
+:root[data-theme="light"] .form-label {
+  color: var(--text-secondary) !important;
+}
+
+:root[data-theme="light"] .card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+}
+
+:root[data-theme="light"] .card-header {
+  border-bottom-color: var(--border) !important;
+}
+
+:root[data-theme="light"] thead th {
+  background: var(--bg-elevated) !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+  border-bottom-color: var(--border) !important;
+}
+
+:root[data-theme="light"] tbody tr {
+  border-bottom-color: var(--border) !important;
+}
+
+:root[data-theme="light"] tbody tr:hover {
+  background: var(--bg-hover) !important;
+}
+
+:root[data-theme="light"] tbody tr:nth-child(even) {
+  background: var(--bg-base) !important;
+}
+
+:root[data-theme="light"] tbody td {
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="light"] .td-mono {
+  color: var(--text-secondary) !important;
+}
+
+:root[data-theme="light"] .stat-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+}
+
+:root[data-theme="light"] .stat-label {
+  color: var(--text-secondary) !important;
+}
+
+:root[data-theme="light"] .stat-value {
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="light"] .btn-primary {
+  background: var(--accent) !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="light"] .btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover) !important;
+}
+
+:root[data-theme="light"] .btn-secondary {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+}
+
+:root[data-theme="light"] .btn-secondary:hover:not(:disabled) {
+  background: var(--bg-hover) !important;
+  border-color: var(--text-secondary) !important;
+}
+
+:root[data-theme="light"] .badge {
+  font-weight: 700 !important;
+}
+
+:root[data-theme="light"] .badge-green {
+  background: var(--green-dim) !important;
+  color: var(--green) !important;
+}
+
+:root[data-theme="light"] .badge-red {
+  background: var(--red-dim) !important;
+  color: var(--red) !important;
+}
+
+:root[data-theme="light"] .badge-yellow {
+  background: var(--yellow-dim) !important;
+  color: var(--yellow) !important;
+}
+
+:root[data-theme="light"] .badge-blue {
+  background: var(--blue-dim) !important;
+  color: var(--blue) !important;
+}
+
+:root[data-theme="light"] .dashboard-hero-pill,
+:root[data-theme="light"] .dashboard-hero-mini-card,
+:root[data-theme="light"] .report-summary-item {
+  background: var(--surface-soft) !important;
+}
+
+:root[data-theme="light"] .sidebar {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.02), rgba(0, 0, 0, 0.01)),
+    var(--bg-surface) !important;
+  border-right-color: var(--border) !important;
+}
+
+:root[data-theme="light"] .sidebar-logo {
+  border-bottom-color: var(--border) !important;
+}
+
+:root[data-theme="light"] .sidebar-logo-title {
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="light"] .sidebar-logo-sub {
+  color: var(--text-secondary) !important;
+}
+
+:root[data-theme="light"] .sidebar-link {
+  color: var(--text-secondary) !important;
+}
+
+:root[data-theme="light"] .sidebar-link:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="light"] .sidebar-link.active {
+  background: var(--accent-dim) !important;
+  color: var(--accent) !important;
+  border-color: rgba(184, 139, 62, 0.18) !important;
+}
+
+:root[data-theme="light"] .sidebar-section-label {
+  color: var(--text-muted) !important;
+}
+
+:root[data-theme="light"] .sidebar-footer {
+  border-top-color: var(--border) !important;
+}
+
+:root[data-theme="light"] .sidebar-user-name {
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="light"] .sidebar-user-role {
+  color: var(--text-muted) !important;
+}
+
+:root[data-theme="light"] .sidebar-farm-status {
+  background: rgba(65, 111, 217, 0.08) !important;
+  border-color: rgba(65, 111, 217, 0.16) !important;
+  color: var(--text-secondary) !important;
+}
+
+:root[data-theme="light"] .app-topbar {
+  background: var(--topbar-bg) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+:root[data-theme="light"] .app-topbar-pill,
+:root[data-theme="light"] .app-topbar-chip,
+:root[data-theme="light"] .app-topbar-user,
+:root[data-theme="light"] .app-topbar-theme-toggle {
+  border-color: var(--topbar-pill-border) !important;
+  background: var(--topbar-pill-bg) !important;
+}
+
+:root[data-theme="light"] .app-topbar-chip {
+  color: var(--green) !important;
+}
+
+:root[data-theme="light"] .app-topbar-chip-muted {
+  color: var(--text-secondary) !important;
+  border-color: var(--border) !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+}
+
+:root[data-theme="light"] .app-topbar-user,
+:root[data-theme="light"] .app-topbar-theme-toggle {
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="light"] .app-topbar-user-role {
+  color: var(--text-secondary) !important;
+}
+
+:root[data-theme="light"] .app-topbar-theme-toggle:hover {
+  background: var(--bg-hover) !important;
+  border-color: var(--border-light) !important;
+}
+
+:root[data-theme="light"] .farm-background::before {
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(65, 111, 217, 0.08),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(184, 139, 62, 0.06),
+      transparent 20%
+    ),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.01), transparent 20%) !important;
+}
+
+:root[data-theme="light"] .dashboard-hero {
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(184, 139, 62, 0.08),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(65, 111, 217, 0.08),
+      transparent 26%
+    ),
+    var(--bg-surface) !important;
+}
+
+:root[data-theme="light"] .page-title {
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="light"] .page-eyebrow {
+  color: var(--text-secondary) !important;
+}
+
+:root[data-theme="light"] .divider {
+  background: var(--border) !important;
+}
+
+:root[data-theme="light"] .alert-banner {
+  border-color: currentColor !important;
+}
+
+:root[data-theme="light"] .alert-banner.error {
+  background: var(--red-dim) !important;
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+}
+
+:root[data-theme="light"] .alert-banner.success {
+  background: var(--green-dim) !important;
+  border-color: var(--green) !important;
+  color: var(--green) !important;
+}
+
+:root[data-theme="light"] .alert-banner.warning {
+  background: var(--yellow-dim) !important;
+  border-color: var(--yellow) !important;
+  color: var(--yellow) !important;
+}
+
+:root[data-theme="light"] .alert-banner.info {
+  background: var(--blue-dim) !important;
+  border-color: var(--blue) !important;
+  color: var(--blue) !important;
+}
+
+:root[data-theme="light"] .modal-backdrop {
+  background: rgba(15, 23, 42, 0.7) !important;
+}
+
+:root[data-theme="light"] .modal {
+  background: var(--bg-surface) !important;
+  border-color: var(--border) !important;
+}
+
+:root[data-theme="light"] .modal-header,
+:root[data-theme="light"] .modal-footer {
+  border-color: var(--border) !important;
+}
+
+:root[data-theme="light"] .modal-title {
+  color: var(--text-primary) !important;
 }
 
 body,
@@ -4292,6 +4605,14 @@ body,
   border-color: rgba(184, 139, 62, 0.26) !important;
   color: #182235 !important;
 }
+
+/* ─── Tabla de Alertas: Columna TIPO en modo claro ────────────────────── */
+:root[data-theme="light"] .alerts-type-chip {
+  color: #0f172a !important;
+  opacity: 1 !important;
+  font-weight: 800 !important;
+}
+
 /* ─── Ubicaciones premium module ─────────────────────────────────────────── */
 
 .locations-premium-hero.card {
