@@ -411,3 +411,272 @@
     font-size: 0.8rem;
   }
 }
+
+/* Forgot password link */
+.login-forgot-password {
+  all: unset;
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color 0.18s ease,
+    text-shadow 0.18s ease;
+}
+
+.login-forgot-password:hover {
+  color: rgba(212, 177, 106, 0.88);
+  text-shadow: 0 0 8px rgba(212, 177, 106, 0.3);
+}
+
+.login-forgot-password:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Modal backdrop */
+.login-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal container */
+.login-modal {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.06)),
+    var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.56),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.login-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.login-modal-title {
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.login-modal-close {
+  all: unset;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.login-modal-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.login-modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-modal-success {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+}
+
+.login-modal-success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: rgba(103, 192, 107, 0.12);
+  border: 2px solid rgba(103, 192, 107, 0.42);
+  color: #67c06b;
+  font-size: 2.4rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.login-modal-success-title {
+  display: block;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.login-modal-success-message {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.login-modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  justify-content: flex-end;
+}
+
+.login-modal-footer .btn {
+  flex: 1;
+  min-height: 42px;
+}
+
+/* Reset password page states */
+.reset-password-header {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.reset-password-eyebrow {
+  display: block;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.reset-password-title {
+  color: var(--text-primary);
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+
+.reset-password-subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.reset-password-footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.reset-password-footer p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.reset-password-footer .login-forgot-password {
+  margin: 0 4px;
+}
+
+/* Error state for invalid/expired token */
+.login-error-state,
+.login-success-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.login-error-icon,
+.login-success-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+}
+
+.login-error-icon {
+  background: rgba(239, 107, 99, 0.12);
+  border: 2px solid rgba(239, 107, 99, 0.42);
+  color: #ef6b63;
+}
+
+.login-success-icon {
+  background: rgba(103, 192, 107, 0.12);
+  border: 2px solid rgba(103, 192, 107, 0.42);
+  color: #67c06b;
+}
+
+.login-error-title,
+.login-success-title {
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.login-error-message,
+.login-success-message {
+  margin: 0 0 24px 0;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  max-width: 90%;
+}
+
+.login-error-state .btn {
+  min-height: 48px;
+}

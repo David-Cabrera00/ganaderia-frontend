@@ -3,13 +3,18 @@ import type { KeyboardEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Eye, EyeOff, Radio, ShieldCheck } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Radio, ShieldCheck, X } from "lucide-react";
 
 import { AuthService } from "@/api/services";
 import { AppError } from "@/api/httpClient";
 import { useAuthStore } from "@/stores/authStore";
 import { CattleIcon } from "@/shared/components/ui/CattleIcon";
-import { loginSchema, type LoginFormValues } from "@/utils/validations";
+import {
+  loginSchema,
+  type LoginFormValues,
+  forgotPasswordSchema,
+  type ForgotPasswordFormValues,
+} from "@/utils/validations";
 import type { SessionData } from "@/types";
 
 import "./LoginPage.css";
@@ -21,6 +26,8 @@ const preventWhitespace = (event: KeyboardEvent<HTMLInputElement>) => {
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
+  const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false);
 
   const setSession = useAuthStore((state) => state.setSession);
   const navigate = useNavigate();
@@ -36,6 +43,15 @@ export function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+  });
+
+  const {
+    register: registerForgot,
+    handleSubmit: handleSubmitForgot,
+    formState: { errors: errorsForgot, isSubmitting: isSubmittingForgot },
+    reset: resetForgot,
+  } = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
   });
 
   const onSubmit = async (values: LoginFormValues) => {
@@ -61,6 +77,38 @@ export function LoginPage() {
     } catch (err) {
       setServerError(AppError.from(err).serverMessage);
     }
+  };
+
+  const onForgotPasswordSubmit = async (values: ForgotPasswordFormValues) => {
+    try {
+      await AuthService.requestPasswordReset(values.email.trim().toLowerCase());
+      setForgotPasswordSuccess(true);
+      resetForgot();
+      setTimeout(() => {
+        setForgotPasswordModalOpen(false);
+        setForgotPasswordSuccess(false);
+      }, 2500);
+    } catch (err) {
+      const appError = AppError.from(err);
+      if (appError.status === 429) {
+        appError.serverMessage =
+          "Has realizado demasiadas solicitudes. Intenta nuevamente más tarde.";
+      } else if (
+        !appError.serverMessage ||
+        (appError.status && appError.status >= 500)
+      ) {
+        appError.serverMessage =
+          "No pudimos procesar la solicitud. Inténtalo nuevamente.";
+      }
+      setServerError(appError.serverMessage);
+    }
+  };
+
+  const closeForgotPasswordModal = () => {
+    setForgotPasswordModalOpen(false);
+    setForgotPasswordSuccess(false);
+    setServerError(null);
+    resetForgot();
   };
 
   return (
@@ -184,6 +232,14 @@ export function LoginPage() {
                   {errors.password.message}
                 </span>
               ) : null}
+
+              <button
+                type="button"
+                className="login-forgot-password"
+                onClick={() => setForgotPasswordModalOpen(true)}
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
             </div>
 
             <button
@@ -230,6 +286,103 @@ export function LoginPage() {
           </p>
         </div>
       </div>
+
+      {forgotPasswordModalOpen ? (
+        <div
+          className="login-modal-backdrop"
+          onClick={closeForgotPasswordModal}
+        >
+          <div className="login-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="login-modal-header">
+              <span className="login-modal-title">Recuperar contraseña</span>
+              <button
+                type="button"
+                className="login-modal-close"
+                onClick={closeForgotPasswordModal}
+                aria-label="Cerrar modal"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {forgotPasswordSuccess ? (
+              <div className="login-modal-body login-modal-success">
+                <div className="login-modal-success-icon">✓</div>
+                <span className="login-modal-success-title">
+                  Solicitud enviada
+                </span>
+                <p className="login-modal-success-message">
+                  Si el correo está registrado, recibirás un enlace para
+                  restablecer tu contraseña.
+                </p>
+              </div>
+            ) : (
+              <form
+                onSubmit={handleSubmitForgot(onForgotPasswordSubmit)}
+                noValidate
+              >
+                <div className="login-modal-body">
+                  {serverError ? (
+                    <div className="alert-banner error" role="alert">
+                      <AlertCircle size={14} />
+                      {serverError}
+                    </div>
+                  ) : null}
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="forgot-email">
+                      Correo electrónico
+                    </label>
+                    <input
+                      id="forgot-email"
+                      type="email"
+                      autoComplete="email"
+                      autoFocus
+                      className={`form-input ${errorsForgot.email ? "error" : ""}`}
+                      placeholder="correo@ejemplo.com"
+                      {...registerForgot("email")}
+                      onKeyDown={preventWhitespace}
+                    />
+                    {errorsForgot.email ? (
+                      <span className="form-error">
+                        <AlertCircle size={12} />
+                        {errorsForgot.email.message}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="login-modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closeForgotPasswordModal}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={isSubmittingForgot}
+                  >
+                    {isSubmittingForgot ? (
+                      <>
+                        <span
+                          className="loading-spinner"
+                          style={{ width: 14, height: 14, borderWidth: 2 }}
+                        />
+                        Enviando...
+                      </>
+                    ) : (
+                      "Enviar enlace"
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

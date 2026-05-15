@@ -48,6 +48,14 @@ export class AuthService {
   static async logout(): Promise<void> {
     localStorage.removeItem('ganaderia_session');
   }
+
+  static async requestPasswordReset(email: string): Promise<void> {
+    await httpClient.post('/api/auth/forgot-password', { email });
+  }
+
+  static async resetPassword(payload: { token: string; newPassword: string }): Promise<void> {
+    await httpClient.post('/api/auth/reset-password', payload);
+  }
 }
 
 export class UserService {

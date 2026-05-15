@@ -1,15 +1,16 @@
-import { Navigate, Outlet, createBrowserRouter } from 'react-router-dom';
-import { useAuthStore } from '@/stores/authStore';
-import { AppLayout } from '@/layouts/AppLayout';
-import { LoginPage } from '@/features/auth/LoginPage';
-import { DashboardPage } from '@/features/dashboard/DashboardPage';
-import { AlertsPage } from '@/features/alerts/AlertsPage';
-import { LocationsPage } from '@/features/locations/LocationsPage';
-import { CowsPage } from '@/features/cows/CowsPage';
-import { CollarsPage } from '@/features/collars/CollarsPage';
-import { GeofencesPage } from '@/features/geofences/GeofencesPage';
-import { ReportsPage } from '@/features/reports/ReportsPage';
-import { UsersPage } from '@/features/users/UsersPage';
+import { Navigate, Outlet, createBrowserRouter } from "react-router-dom";
+import { useAuthStore } from "@/stores/authStore";
+import { AppLayout } from "@/layouts/AppLayout";
+import { LoginPage } from "@/features/auth/LoginPage";
+import { ResetPasswordPage } from "@/features/auth/ResetPasswordPage";
+import { DashboardPage } from "@/features/dashboard/DashboardPage";
+import { AlertsPage } from "@/features/alerts/AlertsPage";
+import { LocationsPage } from "@/features/locations/LocationsPage";
+import { CowsPage } from "@/features/cows/CowsPage";
+import { CollarsPage } from "@/features/collars/CollarsPage";
+import { GeofencesPage } from "@/features/geofences/GeofencesPage";
+import { ReportsPage } from "@/features/reports/ReportsPage";
+import { UsersPage } from "@/features/users/UsersPage";
 
 function ProtectedRoute() {
   const session = useAuthStore((state) => state.session);
@@ -43,11 +44,11 @@ function RootRedirect() {
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <RootRedirect />,
   },
   {
-    path: '/login',
+    path: "/login",
     element: <GuestOnlyRoute />,
     children: [
       {
@@ -57,25 +58,29 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    path: "/reset-password",
+    element: <ResetPasswordPage />,
+  },
+  {
     element: <ProtectedRoute />,
     children: [
       {
         element: <AppLayout />,
         children: [
-          { path: '/dashboard', element: <DashboardPage /> },
-          { path: '/alerts', element: <AlertsPage /> },
-          { path: '/locations', element: <LocationsPage /> },
-          { path: '/cows', element: <CowsPage /> },
-          { path: '/collars', element: <CollarsPage /> },
-          { path: '/geofences', element: <GeofencesPage /> },
-          { path: '/reports', element: <ReportsPage /> },
-          { path: '/users', element: <UsersPage /> },
+          { path: "/dashboard", element: <DashboardPage /> },
+          { path: "/alerts", element: <AlertsPage /> },
+          { path: "/locations", element: <LocationsPage /> },
+          { path: "/cows", element: <CowsPage /> },
+          { path: "/collars", element: <CollarsPage /> },
+          { path: "/geofences", element: <GeofencesPage /> },
+          { path: "/reports", element: <ReportsPage /> },
+          { path: "/users", element: <UsersPage /> },
         ],
       },
     ],
   },
   {
-    path: '*',
+    path: "*",
     element: <RootRedirect />,
   },
 ]);

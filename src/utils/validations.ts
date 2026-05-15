@@ -97,3 +97,27 @@ export type UserCreateFormValues = z.infer<typeof userCreateSchema>;
 // Alias por compatibilidad si otro archivo usa userSchema
 export const userSchema = userCreateSchema;
 export type UserFormValues = UserCreateFormValues;
+
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'El correo es obligatorio')
+    .email('Correo inválido')
+    .refine((value) => !/\s/.test(value), 'El correo no puede contener espacios'),
+});
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = z.object({
+  newPassword: z
+    .string()
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .max(50, 'La contraseña no puede superar 50 caracteres')
+    .refine((value) => !/\s/.test(value), 'La contraseña no puede contener espacios'),
+  confirmPassword: z
+    .string()
+    .min(1, 'Confirmar contraseña es obligatorio'),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: 'Las contraseñas no coinciden',
+  path: ['confirmPassword'],
+});
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
