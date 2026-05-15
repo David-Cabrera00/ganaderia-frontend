@@ -5778,9 +5778,10 @@ body,
 
 .cows-premium-metric {
   min-height: 178px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 8px;
+  align-items: start;
   padding: 20px;
 }
 
@@ -8364,9 +8365,10 @@ body,
 
 .users-premium-metric {
   min-height: 178px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 8px;
+  align-items: start;
   padding: 20px;
 }
 
@@ -8468,6 +8470,45 @@ body,
   color: var(--text-secondary);
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+/* Uniform KPI layout helpers */
+.users-premium-metric-copy span,
+.cows-premium-metric-copy span,
+.report-premium-title {
+  min-height: 28px;
+  display: block;
+}
+
+.users-premium-metric-copy strong,
+.cows-premium-metric-copy strong,
+.report-premium-value {
+  margin-top: 0;
+  line-height: 1;
+}
+
+.users-premium-metric-copy p,
+.cows-premium-metric-copy p,
+.report-premium-description {
+  margin-bottom: 0;
+}
+
+/* Prevent numeric KPI values from being visually clipped (ascenders/overshoots) */
+.cows-premium-metric-copy strong,
+.users-premium-metric-copy strong,
+.collars-premium-metric-copy strong,
+.geofences-premium-metric-copy strong,
+.report-premium-value,
+.dashboard-kpi-value,
+.dashboard-hero-mini-card strong,
+.overview-card-value,
+.stat-value {
+  line-height: 1.22 !important;
+  padding-top: 4px !important;
+  padding-bottom: 3px !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  overflow: visible !important;
 }
 
 .users-premium-metric-success .users-premium-metric-icon,
