@@ -4613,6 +4613,135 @@ body,
   font-weight: 800 !important;
 }
 
+/* ─── Light mode text contrast hardening ──────────────────────────────── */
+:root[data-theme="light"] .alerts-cow-chip {
+  color: #0f172a !important;
+  opacity: 1 !important;
+  font-weight: 800 !important;
+}
+
+:root[data-theme="light"] .alerts-no-actions {
+  color: #334155 !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+:root[data-theme="light"] .alerts-premium-table-shell td {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] .alerts-message-cell strong {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] .alerts-message-cell span {
+  color: #334155 !important;
+}
+
+:root[data-theme="light"] .alerts-observations-cell {
+  color: #334155 !important;
+}
+
+:root[data-theme="light"] .alerts-date-cell {
+  color: #64748b !important;
+}
+
+:root[data-theme="light"] .alerts-id-cell {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] .td-mono {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] .alerts-status-chip {
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+:root[data-theme="light"] .card-title {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] .card-body {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] .stat-value {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] .stat-label {
+  color: #334155 !important;
+}
+
+:root[data-theme="light"] .badge {
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+:root[data-theme="light"] .chip,
+:root[data-theme="light"] .pill {
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+/* Ensure text elements in tables are readable */
+:root[data-theme="light"] tbody td {
+  color: #0f172a !important;
+}
+
+/* Spanning text fixes for all modules */
+:root[data-theme="light"] .locations-premium-hero-card span,
+:root[data-theme="light"] .cows-premium-hero-card span,
+:root[data-theme="light"] .collars-premium-hero-card span,
+:root[data-theme="light"] .geofences-premium-hero-card span,
+:root[data-theme="light"] .users-premium-hero-card span {
+  color: #334155 !important;
+}
+
+:root[data-theme="light"] .locations-premium-hero-card small,
+:root[data-theme="light"] .cows-premium-hero-card small,
+:root[data-theme="light"] .collars-premium-hero-card small,
+:root[data-theme="light"] .geofences-premium-hero-card small,
+:root[data-theme="light"] .users-premium-hero-card small {
+  color: #64748b !important;
+}
+
+/* Text elements in premium modules for contrast */
+:root[data-theme="light"] .locations-premium-table-shell tbody td,
+:root[data-theme="light"] .cows-premium-table-shell tbody td,
+:root[data-theme="light"] .collars-premium-table-shell tbody td,
+:root[data-theme="light"] .geofences-premium-table-shell tbody td,
+:root[data-theme="light"] .users-premium-table-shell tbody td {
+  color: #0f172a !important;
+}
+
+/* Names and identifiers in module tables */
+:root[data-theme="light"] .cows-name-cell strong,
+:root[data-theme="light"] .locations-name-cell,
+:root[data-theme="light"] .collars-id-cell,
+:root[data-theme="light"] .geofences-name-cell,
+:root[data-theme="light"] .users-name-cell {
+  color: #0f172a !important;
+}
+
+/* Module-specific chips */
+:root[data-theme="light"] .locations-cow-chip,
+:root[data-theme="light"] .locations-status-chip,
+:root[data-theme="light"] .cows-token-chip,
+:root[data-theme="light"] .cows-status-chip,
+:root[data-theme="light"] .collars-token-chip,
+:root[data-theme="light"] .collars-cow-chip,
+:root[data-theme="light"] .collars-battery-chip,
+:root[data-theme="light"] .collars-signal-chip,
+:root[data-theme="light"] .geofences-name-chip,
+:root[data-theme="light"] .users-role-chip {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
 /* ─── Ubicaciones premium module ─────────────────────────────────────────── */
 
 .locations-premium-hero.card {
