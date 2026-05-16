@@ -9404,3 +9404,172 @@ body,
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   REPORTS - AI SUMMARY LIGHT/DARK THEME FIX
+   Corrige la capa gris/opaca del análisis inteligente
+   ========================================================= */
+
+.report-panel {
+  overflow: hidden;
+}
+
+.report-panel .reports-ai-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  padding: 28px 30px;
+  border-radius: 26px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background:
+    radial-gradient(
+      circle at 92% 18%,
+      rgba(185, 135, 47, 0.11),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(248, 250, 252, 0.9)
+    );
+  box-shadow:
+    0 18px 48px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  color: #172033;
+  opacity: 1;
+  filter: none;
+  backdrop-filter: none;
+}
+
+.report-panel .reports-ai-summary-label {
+  display: inline-flex;
+  margin-bottom: 12px;
+  color: #b7791f;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.report-panel .reports-ai-summary p {
+  margin: 0;
+  color: #24324a;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.report-panel .reports-ai-summary-meta {
+  min-width: 190px;
+  padding: 20px 22px;
+  border-radius: 22px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.98),
+      rgba(241, 245, 249, 0.92)
+    );
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.1);
+  color: #0f172a;
+}
+
+.report-panel .reports-ai-summary-meta span {
+  display: block;
+  margin-bottom: 12px;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.report-panel .reports-ai-summary-meta strong {
+  color: #0f172a;
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+/* Botón Fallback heurístico / IA Gemini */
+.report-panel .reports-ai-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(185, 135, 47, 0.24);
+  background: rgba(185, 135, 47, 0.1);
+  color: #a16207;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+/* Modo oscuro: conserva el look premium */
+[data-theme='dark'] .report-panel .reports-ai-summary,
+.dark .report-panel .reports-ai-summary {
+  border-color: rgba(148, 163, 184, 0.18);
+  background:
+    radial-gradient(
+      circle at 92% 18%,
+      rgba(212, 177, 106, 0.1),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.88),
+      rgba(30, 41, 59, 0.72)
+    );
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: #f8fafc;
+  backdrop-filter: blur(14px);
+}
+
+[data-theme='dark'] .report-panel .reports-ai-summary p,
+.dark .report-panel .reports-ai-summary p {
+  color: rgba(226, 232, 240, 0.84);
+}
+
+[data-theme='dark'] .report-panel .reports-ai-summary-label,
+.dark .report-panel .reports-ai-summary-label {
+  color: #d4b16a;
+}
+
+[data-theme='dark'] .report-panel .reports-ai-summary-meta,
+.dark .report-panel .reports-ai-summary-meta {
+  border-color: rgba(148, 163, 184, 0.18);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(30, 41, 59, 0.9),
+      rgba(15, 23, 42, 0.82)
+    );
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+  color: #f8fafc;
+}
+
+[data-theme='dark'] .report-panel .reports-ai-summary-meta span,
+.dark .report-panel .reports-ai-summary-meta span {
+  color: rgba(148, 163, 184, 0.9);
+}
+
+[data-theme='dark'] .report-panel .reports-ai-summary-meta strong,
+.dark .report-panel .reports-ai-summary-meta strong {
+  color: #f8fafc;
+}
+
+[data-theme='dark'] .report-panel .reports-ai-refresh,
+.dark .report-panel .reports-ai-refresh {
+  border-color: rgba(212, 177, 106, 0.28);
+  background: rgba(212, 177, 106, 0.12);
+  color: #d4b16a;
+}
+
+@media (max-width: 768px) {
+  .report-panel .reports-ai-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .report-panel .reports-ai-summary-meta {
+    width: 100%;
+  }
+}
