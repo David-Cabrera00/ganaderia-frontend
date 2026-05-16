@@ -874,3 +874,59 @@
 .dark .login-page-fixed-theme .password-toggle {
   color: rgba(220, 231, 255, 0.62);
 }
+
+.login-page-fixed-theme .login-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.login-page-fixed-theme .login-feature-item svg {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  flex-shrink: 0;
+  color: rgba(185, 135, 47, 0.82);
+  stroke-width: 2.2;
+}
+
+.login-page-fixed-theme .login-feature-item span,
+.login-page-fixed-theme .login-feature-item p {
+  margin: 0;
+  color: inherit;
+}
+
+/* Icono del ojo en modo claro */
+.login-page-fixed-theme .password-toggle {
+  color: rgba(71, 85, 105, 0.72);
+}
+
+.login-page-fixed-theme .password-toggle:hover {
+  color: rgba(185, 135, 47, 0.96);
+}
+
+/* Ícono principal de la marca en modo claro */
+.login-page-fixed-theme .login-logo svg {
+  color: #b9872f;
+}
+
+/* Modo oscuro: mantiene el look premium */
+[data-theme='dark'] .login-page-fixed-theme .login-feature-item svg,
+.dark .login-page-fixed-theme .login-feature-item svg {
+  color: rgba(220, 231, 255, 0.82);
+}
+
+[data-theme='dark'] .login-page-fixed-theme .password-toggle,
+.dark .login-page-fixed-theme .password-toggle {
+  color: rgba(220, 231, 255, 0.62);
+}
+
+[data-theme='dark'] .login-page-fixed-theme .password-toggle:hover,
+.dark .login-page-fixed-theme .password-toggle:hover {
+  color: rgba(212, 177, 106, 0.92);
+}
+
+[data-theme='dark'] .login-page-fixed-theme .login-logo svg,
+.dark .login-page-fixed-theme .login-logo svg {
+  color: #d4b16a;
+}
