@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { DashboardService } from '@/api/services';
+import { useAuthStore } from '@/stores/authStore';
 import { AppError } from '@/api/httpClient';
 import { PageContainer } from '@/layouts/components/PageContainer';
 import { PageHeader } from '@/layouts/components/PageHeader';
@@ -54,25 +55,27 @@ const quickLinks = [
     title: 'Gestionar vacas',
     description: 'Consulta inventario, estado del hato y datos principales.',
     to: APP_ROUTES.cows,
-    icon: <CattleIcon width={18} height={18} />,
+    icon: <CattleIcon width={24} height={24} />,
+    roles: ['ADMINISTRADOR', 'SUPERVISOR', 'OPERADOR'] as const,
   },
   {
     title: 'Supervisar collares',
     description: 'Revisa batería, señal, asignación y disponibilidad.',
     to: APP_ROUTES.collars,
-    icon: <Radio size={18} />,
+    icon: <Radio size={24} />,
   },
   {
     title: 'Ver geocercas',
     description: 'Valida perímetros, radios, estado y cobertura.',
     to: APP_ROUTES.geofences,
-    icon: <MapPin size={18} />,
+    icon: <MapPin size={24} />,
+    roles: ['ADMINISTRADOR', 'SUPERVISOR'] as const,
   },
   {
     title: 'Atender alertas',
     description: 'Gestiona incidentes abiertos y su seguimiento.',
     to: APP_ROUTES.alerts,
-    icon: <Bell size={18} />,
+    icon: <Bell size={24} />,
   },
 ] as const;
 
@@ -85,6 +88,17 @@ export function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { hasAnyRole } = useAuthStore();
+
+    const visibleQuickLinks = useMemo(
+    () =>
+      quickLinks.filter((link) => {
+        if (!('roles' in link)) return true;
+
+        return hasAnyRole([...link.roles]);
+      }),
+    [hasAnyRole],
+);
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -289,8 +303,7 @@ export function DashboardPage() {
 
           <div className="card-body">
             <div className="dashboard-modules-grid">
-              {quickLinks.map((link) => (
-                <Link key={link.to} to={link.to} className="dashboard-module-link">
+                  {visibleQuickLinks.map((link) => (                <Link key={link.to} to={link.to} className="dashboard-module-link">
                   <div className="dashboard-module-shine" />
 
                   <div className="dashboard-module-icon">
