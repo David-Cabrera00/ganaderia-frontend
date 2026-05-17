@@ -26,14 +26,62 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: APP_ROUTES.dashboard, label: 'Dashboard', icon: <LayoutDashboard size={18} />, group: 'control' },
-  { to: APP_ROUTES.alerts, label: 'Alertas', icon: <Bell size={18} />, group: 'control' },
-  { to: APP_ROUTES.locations, label: 'Ubicaciones', icon: <Navigation size={18} />, group: 'control' },
-  { to: APP_ROUTES.cows, label: 'Vacas', icon: <CattleIcon width={18} height={18} />, group: 'field', roles: ['ADMINISTRADOR', 'SUPERVISOR', 'OPERADOR'] },
-  { to: APP_ROUTES.collars, label: 'Collares', icon: <Radio size={18} />, group: 'field' },
-  { to: APP_ROUTES.geofences, label: 'Geocercas', icon: <MapPin size={18} />, group: 'field', roles: ['ADMINISTRADOR', 'SUPERVISOR'] },
-  { to: APP_ROUTES.reports, label: 'Reportes', icon: <FileText size={18} />, group: 'management', roles: ['ADMINISTRADOR', 'SUPERVISOR'] },
-  { to: APP_ROUTES.users, label: 'Usuarios', icon: <Users size={18} />, group: 'management', roles: ['ADMINISTRADOR'] },
+  {
+    to: APP_ROUTES.dashboard,
+    label: 'Dashboard',
+    icon: <LayoutDashboard size={18} />,
+    group: 'control',
+    roles: ['ADMINISTRADOR', 'SUPERVISOR', 'OPERADOR', 'TECNICO'],
+  },
+  {
+    to: APP_ROUTES.alerts,
+    label: 'Alertas',
+    icon: <Bell size={18} />,
+    group: 'control',
+    roles: ['ADMINISTRADOR', 'SUPERVISOR', 'OPERADOR', 'TECNICO'],
+  },
+  {
+    to: APP_ROUTES.locations,
+    label: 'Ubicaciones',
+    icon: <Navigation size={18} />,
+    group: 'control',
+    roles: ['ADMINISTRADOR', 'SUPERVISOR', 'OPERADOR'],
+  },
+  {
+    to: APP_ROUTES.cows,
+    label: 'Vacas',
+    icon: <CattleIcon width={18} height={18} />,
+    group: 'field',
+    roles: ['ADMINISTRADOR', 'SUPERVISOR', 'OPERADOR'],
+  },
+  {
+    to: APP_ROUTES.collars,
+    label: 'Collares',
+    icon: <Radio size={18} />,
+    group: 'field',
+    roles: ['ADMINISTRADOR', 'SUPERVISOR', 'OPERADOR'],
+  },
+  {
+    to: APP_ROUTES.geofences,
+    label: 'Geocercas',
+    icon: <MapPin size={18} />,
+    group: 'field',
+    roles: ['ADMINISTRADOR', 'SUPERVISOR'],
+  },
+  {
+    to: APP_ROUTES.reports,
+    label: 'Reportes',
+    icon: <FileText size={18} />,
+    group: 'management',
+    roles: ['ADMINISTRADOR', 'SUPERVISOR'],
+  },
+  {
+    to: APP_ROUTES.users,
+    label: 'Usuarios',
+    icon: <Users size={18} />,
+    group: 'management',
+    roles: ['ADMINISTRADOR'],
+  },
 ];
 
 const GROUP_LABELS: Record<NavItem['group'], string> = {

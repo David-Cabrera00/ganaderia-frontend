@@ -63,6 +63,7 @@ const quickLinks = [
     description: 'Revisa batería, señal, asignación y disponibilidad.',
     to: APP_ROUTES.collars,
     icon: <Radio size={24} />,
+    roles: ['ADMINISTRADOR', 'SUPERVISOR', 'OPERADOR'] as const,
   },
   {
     title: 'Ver geocercas',
@@ -76,6 +77,7 @@ const quickLinks = [
     description: 'Gestiona incidentes abiertos y su seguimiento.',
     to: APP_ROUTES.alerts,
     icon: <Bell size={24} />,
+    roles: ['ADMINISTRADOR', 'SUPERVISOR', 'OPERADOR', 'TECNICO'] as const,
   },
 ] as const;
 
@@ -88,6 +90,7 @@ export function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
   const { hasAnyRole } = useAuthStore();
 
     const visibleQuickLinks = useMemo(
